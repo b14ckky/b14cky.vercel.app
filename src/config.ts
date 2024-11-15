@@ -63,9 +63,19 @@ export const profileConfig: ProfileConfig = {
       url: 'https://x.com/JeelNariya',
     },
     {
+      name: 'Linkedin',
+      icon: 'fa6-brands:linkedin',
+      url: 'https://www.linkedin.com/in/jeel-nariya-6bb065204/',
+    },
+    {
       name: 'GitHub',
       icon: 'fa6-brands:github',
       url: 'https://github.com/b14ckky',
+    },
+    {
+      name: 'Discord',
+      icon: 'fa6-brands:discord',
+      url: 'https://discordapp.com/users/755438740767506443',
     },
   ],
 }
