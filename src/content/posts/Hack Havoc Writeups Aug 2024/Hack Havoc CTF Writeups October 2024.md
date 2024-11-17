@@ -2,7 +2,7 @@
 title: HACK HAVOC CTF Writeups Oct 2024
 published: 2024-08-08
 description: Some Writeups of HACK HAVOC 2024.
-tags: [HACK HAVOC, Oct 2024, Mobile, Steg, OSINT, Rev, Misc, Crypto, B2R, Web, CLoud, Forensic]
+tags: [HACK HAVOC, Oct 2024, Mobile, Steg, OSINT, Rev, Misc, Crypto, B2R, Web, Cloud, Forensic]
 image: "cover.jpg"
 category: CTF Writeups
 draft: false
