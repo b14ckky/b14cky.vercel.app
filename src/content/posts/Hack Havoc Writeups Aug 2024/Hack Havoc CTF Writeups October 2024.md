@@ -4,7 +4,7 @@ published: 2024-08-08
 description: Some Writeups of HACK HAVOC 2024.
 tags: [HACK HAVOC, Oct 2024]
 image: "cover.jpg"
-category: KPMG
+category: CTF Writeup
 draft: false
 ---
 
