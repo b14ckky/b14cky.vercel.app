@@ -4,7 +4,7 @@ published: 2024-04-01
 description: Some Writeups of KPMG 2024.
 tags: [KPMG, Aug 2024]
 image: "images/cover.png"
-category: CTF Writeup
+category: CTF Writeups
 draft: false
 ---
 
