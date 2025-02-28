@@ -2,7 +2,7 @@
 title: TLS Handshake
 published: 2025-02-28
 description: Visualization of TLS Handshake.
-tags: [Crypto]
+tags: [Cryptography]
 image: "images/cover.png"
 category: Concept Explained
 draft: false
