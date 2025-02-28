@@ -10,7 +10,8 @@ draft: false
 # TLS Structure and Working
 
 
-<img src="TLS Handshake.svg">
+![TLS Handshake](TLS%20Handshake.svg)
+
 
 ```
 Note > For better appearance, download the image.
