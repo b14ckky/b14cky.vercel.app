@@ -54,7 +54,7 @@ Cipher Suites (21 suites)
 
 ### Key Exchange
 
-1. First, We need to generate ==seed value (Secret key for HMAC, Secret key for Symmetric Encryption)==
+1. First, We need to generate `seed value (Secret key for HMAC, Secret key for Symmetric Encryption)`
 
 >[!note]
 >From this seed value any number of keys can be generate in future for both parties so key exchange is one time process.
@@ -69,13 +69,13 @@ Cipher Suites (21 suites)
 
 #### PSK (Pre-Shared Key)
 
-- it ==will not provides forward secrecy==.
+- it `will not provides forward secrecy`.
 
 ![Pasted image 20250222173714](images/Pasted%20image%2020250222173714.png)
 
 #### RSA (Rivest-Shamir-Adleman)
 
-- it ==will not provides forward secrecy==.
+- it `will not provides forward secrecy`.
 
 ![Pasted image 20250222173843](images/Pasted%20image%2020250222173843.png)
 
@@ -86,10 +86,10 @@ Cipher Suites (21 suites)
 ![Pasted image 20250222175106](images/Pasted%20image%2020250222175106.png)
 
 - DH (Diffie-Helman) Variations,
-	- **Elliptic curve Diffie-Helman Ephemeral (DE Parameters are temporary into cert and key file) ECDHE** ==provides forward secrecy==. (More Efficient and Secure then DHE) 
-	- **DHE Diffie-Helman Ephemeral** ==provides forward secrecy==.
-	- **Elliptic curve Diffie-Helman ECDH (DE Parameters are static into cert and key file)** ==will not provides forward secrecy==.(More Efficient and Secure then DH)
-	- **Diffie-Helman DH** ==will not provides forward secrecy==.
+	- **Elliptic curve Diffie-Helman Ephemeral (DE Parameters are temporary into cert and key file) ECDHE** `provides forward secrecy`. (More Efficient and Secure then DHE) 
+	- **DHE Diffie-Helman Ephemeral** `provides forward secrecy`.
+	- **Elliptic curve Diffie-Helman ECDH (DE Parameters are static into cert and key file)** `will not provides forward secrecy`.(More Efficient and Secure then DH)
+	- **Diffie-Helman DH** `will not provides forward secrecy`.
 	- Parameters such as **P, G, Private Key** 
 
 ![Pasted image 20250222174128](images/Pasted%20image%2020250222174128.png)
@@ -99,12 +99,12 @@ Cipher Suites (21 suites)
 - Definition : **" Once encrypted always encrypted "** meaning that asymmetric private key never compromise whether we are using it or not.
 
 - Without Forward Secrecy
-- The ==Parameters (P, G, Private Key) are statically stored in private key itself== which is not safe because attacker ==get that private key by chance then it can generate seed value== out of it. 
+- The `Parameters (P, G, Private Key) are statically stored in private key itself` which is not safe because attacker `get that private key by chance then it can generate seed value` out of it. 
 
 ![Pasted image 20250222180549](images/Pasted%20image%2020250222180549.png)
 
 - With Forward Secrecy
-- For ECDHE and DHE the Parameters (P, G, Private Key) are ==discarded after getting seed== value so even ==if attacker gets the private key it can't get the seed==. 
+- For ECDHE and DHE the Parameters (P, G, Private Key) are `discarded after getting seed` value so even `if attacker gets the private key it can't get the seed`. 
 
 ![Pasted image 20250222180313](images/Pasted%20image%2020250222180313.png)
 
@@ -218,7 +218,7 @@ Key Sizes
 
 - Cipher blocks are not tied to blocks before or after so its vulnerable to changing block in cipher text so **must pair with MAC know as Galois Counter Mode (GCM)**.
 - its a **AEAD (Authenticated Encryption with Associated Data) cipher**
-	- can do ==symmetric encryption and MAC== at the same time
+	- can do `symmetric encryption and MAC` at the same time
 - Can be parallelized 
 
 - Encryption / Decryption
@@ -248,7 +248,7 @@ Key Sizes
 #### Summarization
 
 >[!summary]
-><b>AEAD (Authenticated Encryption with Associated Data)</b> ciphers provide both ==confidentiality== and ==integrity== by combining ==encryption== and ==authentication== in a single operation.
+><b>AEAD (Authenticated Encryption with Associated Data)</b> ciphers provide both `confidentiality` and `integrity` by combining `encryption` and `authentication` in a single operation.
 >
 >Examples: ChaCha20-Poly1305, AES-CCM (Counter with CBC-MAC Mode), AES-GCM (Galois/Counter Mode), AES-GCM-SIV (Synthetic Initialization Vector), OCB (Offset Codebook Mode)
 
@@ -636,7 +636,7 @@ TLS 1.3 was designed to eliminate older vulnerabilities, but new theoretical att
 >Why 4 Symmetric Session Keys??
 
 >[!abstract]
->Client and Server creates ==two different tunnel== for data transfer one for ==client to server== and another for ==server to client==.
+>Client and Server creates `two different tunnel` for data transfer one for `client to server` and another for `server to client`.
 >
 >If Attacker by chance successful to bruteforce one pair or keys then they only able to compromise half of conversations. 
 
