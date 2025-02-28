@@ -74,8 +74,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -173,6 +172,8 @@
   "lastOpenFiles": [
     "images/Pasted.md",
     "TLS Handshake Explained/TLS Handshake.md",
-    "images"
+    "images",
+    "KPMG CTF Writeups Aug 2024/KPMG_CTF_Aug_2024.md",
+    "images.md"
   ]
 }
