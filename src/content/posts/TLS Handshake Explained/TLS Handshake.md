@@ -9,16 +9,18 @@ draft: false
 ---
 
 # TLS Structure and Working
+
 ## Cipher Suites in Handshake
 
-![Pasted image 20250222192328.png](images/Pasted image 20250222192328.png)
-![Pasted image 20250222172950.png](images/Pasted image 20250222172950.png)
+![[Pasted image 20250222192328.png]]
+
+![[Pasted image 20250222172950.png]]
 
 - This Field is present to the TLS Client Hello Packet in Application Layer
 
-![Pasted image 20250221194224.png](images/Pasted image 20250221194224.png)
+![[Pasted image 20250221194224.png]]
 
-![Pasted image 20250221194341.png](images/Pasted image 20250221194341.png)
+![[Pasted image 20250221194341.png]]
 
 - From Most Secure to Least Secure
 - There can be different suites for different version of TLS
@@ -72,19 +74,19 @@ Cipher Suites (21 suites)
 
 - it ==will not provides forward secrecy==.
 
-![Pasted image 20250222173714.png](images/Pasted image 20250222173714.png)
+![[Pasted image 20250222173714.png]]
 
 #### RSA (Rivest-Shamir-Adleman)
 
 - it ==will not provides forward secrecy==.
 
-![Pasted image 20250222173843.png](images/Pasted image 20250222173843.png)
+![[Pasted image 20250222173843.png]]
 
 #### DH (Diffie-Helman)
 
-![Pasted image 20250222174331.png](images/Pasted image 20250222174331.png)
+![[Pasted image 20250222174331.png]]
 
-![Pasted image 20250222175106.png](images/Pasted image 20250222175106.png)
+![[Pasted image 20250222175106.png]]
 
 - DH (Diffie-Helman) Variations,
 	- **Elliptic curve Diffie-Helman Ephemeral (DE Parameters are temporary into cert and key file) ECDHE** ==provides forward secrecy==. (More Efficient and Secure then DHE) 
@@ -93,7 +95,7 @@ Cipher Suites (21 suites)
 	- **Diffie-Helman DH** ==will not provides forward secrecy==.
 	- Parameters such as **P, G, Private Key** 
 
-![Pasted image 20250222174128.png](images/Pasted image 20250222174128.png)
+![[Pasted image 20250222174128.png]]
 
 #### Forward Secrecy 
 
@@ -102,17 +104,17 @@ Cipher Suites (21 suites)
 - Without Forward Secrecy
 - The ==Parameters (P, G, Private Key) are statically stored in private key itself== which is not safe because attacker ==get that private key by chance then it can generate seed value== out of it. 
 
-![Pasted image 20250222180549.png](images/Pasted image 20250222180549.png)
+![[Pasted image 20250222180549.png]]
 
 - With Forward Secrecy
 - For ECDHE and DHE the Parameters (P, G, Private Key) are ==discarded after getting seed== value so even ==if attacker gets the private key it can't get the seed==. 
 
-![Pasted image 20250222180313.png](images/Pasted image 20250222180313.png)
+![[Pasted image 20250222180313.png]]
 
 
 #### Avoid, Accept, Prefer
 
-![Pasted image 20250222192624.png](images/Pasted image 20250222192624.png)
+![[Pasted image 20250222192624.png]]
 ### Authentication
 
 - Verify if server is truly who they say are
@@ -124,11 +126,11 @@ Cipher Suites (21 suites)
 
 #### PSK
 
-![Pasted image 20250222181155.png](images/Pasted image 20250222181155.png)
+![[Pasted image 20250222181155.png]]
 
 #### DSS (Digital Signature Standard)
 
-![Pasted image 20250222181309.png](images/Pasted image 20250222181309.png)
+![[Pasted image 20250222181309.png]]
 
 - DSA
 	- Random Number is very important
@@ -136,15 +138,15 @@ Cipher Suites (21 suites)
 	- If Random # is ever re-used, Private Key can be extracted
 	- RFC 6979 u— Generate random # deterministically based on Message
 
-![Pasted image 20250222181418.png](images/Pasted image 20250222181418.png)
+![[Pasted image 20250222181418.png]]
 
 #### RSA vs DSS (DSA)
 
-![Pasted image 20250222181822.png](images/Pasted image 20250222181822.png)
+![[Pasted image 20250222181822.png]]
 
-![Pasted image 20250222181901.png](images/Pasted image 20250222181901.png)
+![[Pasted image 20250222181901.png]]
 
-![Pasted image 20250222181937.png](images/Pasted image 20250222181937.png)
+![[Pasted image 20250222181937.png]]
 
 >[!summary]
 >Between RSA and DSS, RSA better performing in terms of security and largely acceptance
@@ -152,7 +154,7 @@ Cipher Suites (21 suites)
 
 #### RSA vs ECDSA
 
-![Pasted image 20250222182217.png](images/Pasted image 20250222182217.png)
+![[Pasted image 20250222182217.png]]
 
 >[!summary]
 >Between RSA and ECDSA .. choose ECDSA
@@ -168,7 +170,7 @@ Cipher Suites (21 suites)
 
 #### Avoid, Accept, Prefer
 
-![Pasted image 20250222192846.png](images/Pasted image 20250222192846.png)
+![[Pasted image 20250222192846.png]]
 ### Encryption
 
 - Here are numbers of Encryption algorithms,
@@ -189,16 +191,16 @@ Key Sizes
 > 128 bits : very secure
 ```
 
-![Pasted image 20250222183000.png](images/Pasted image 20250222183000.png)
-![Pasted image 20250222183134.png](images/Pasted image 20250222183134.png)
+![[Pasted image 20250222183000.png]]
+![[Pasted image 20250222183134.png]]
 #### Block cipher vs Stream Cipher
 
-![Pasted image 20250222183243.png](images/Pasted image 20250222183243.png)
+![[Pasted image 20250222183243.png]]
 
 #### What is Diffusion?
 
-![Pasted image 20250222183349.png](images/Pasted image 20250222183349.png)
-![Pasted image 20250222183430.png](images/Pasted image 20250222183430.png)
+![[Pasted image 20250222183349.png]]
+![[Pasted image 20250222183430.png]]
 
 #### Block Cipher Modes
 
@@ -209,11 +211,11 @@ Key Sizes
 
 - Encryption 
 
-![Pasted image 20250222183620.png](images/Pasted image 20250222183620.png)
+![[Pasted image 20250222183620.png]]
 
 - Decryption
 
-![Pasted image 20250222183649.png](images/Pasted image 20250222183649.png)
+![[Pasted image 20250222183649.png]]
 
 ##### CTR (Counter)
 
@@ -223,22 +225,22 @@ Key Sizes
 - Can be parallelized 
 
 - Encryption / Decryption
-![Pasted image 20250222183923.png](images/Pasted image 20250222183923.png)
+![[Pasted image 20250222183923.png]]
 
 
 #### 3DES-CBC, RC4-128, DES-CBC
 
-![Pasted image 20250222185327.png](images/Pasted image 20250222185327.png)
+![[Pasted image 20250222185327.png]]
 
 #### AES-128/256-GCM/CBC
 
 - Given <font color="cyan">2 Encryption Algorithms</font> are known to be much secure then other two.
 
-![Pasted image 20250222185630.png](images/Pasted image 20250222185630.png)
+![[Pasted image 20250222185630.png]]
 
 #### ChaCha20
 
-![Pasted image 20250222185859.png](images/Pasted image 20250222185859.png)
+![[Pasted image 20250222185859.png]]
 
 
 
@@ -255,7 +257,7 @@ Key Sizes
 
 #### Avoid, Accept, Prefer
 
-![Pasted image 20250222193004.png](images/Pasted image 20250222193004.png)
+![[Pasted image 20250222193004.png]]
 ### Hashing
 
 - Hashing algorithm which will be used as a MAC (Message Authentication Code) Provides Integrity and Authentication for Bulk Data
@@ -267,25 +269,25 @@ Key Sizes
 
 #### MD5
 
-![Pasted image 20250222191505.png](images/Pasted image 20250222191505.png)
+![[Pasted image 20250222191505.png]]
 
 #### SHA-1/256/384/512
 
 - SHA1 Family
 
-![Pasted image 20250222191727.png](images/Pasted image 20250222191727.png)
+![[Pasted image 20250222191727.png]]
 
 - SHA-2 Family
 
-![Pasted image 20250222191823.png](images/Pasted image 20250222191823.png)
+![[Pasted image 20250222191823.png]]
 
 #### Poly1305
 
-![Pasted image 20250222191929.png](images/Pasted image 20250222191929.png)
+![[Pasted image 20250222191929.png]]
 
 #### Avoid, Accept, Prefer
 
-![Pasted image 20250222193055.png](images/Pasted image 20250222193055.png)
+![[Pasted image 20250222193055.png]]
 
 
 ## Cipher Suites Task
@@ -537,101 +539,101 @@ TLS 1.3 was designed to eliminate older vulnerabilities, but new theoretical att
 
 ### Records and its parameters
 
-![Pasted image 20250223011850.png](images/Pasted image 20250223011850.png)
+![[Pasted image 20250223011850.png]]
 
 - Multiple Records can be sent at a time with different parameters
 
-![Pasted image 20250223012219.png](images/Pasted image 20250223012219.png)
-![Pasted image 20250223013219.png](images/Pasted image 20250223013219.png)
+![[Pasted image 20250223012219.png]]
+![[Pasted image 20250223013219.png]]
 
 ### Record Header
 
-![Pasted image 20250223013134.png](images/Pasted image 20250223013134.png)
+![[Pasted image 20250223013134.png]]
 
 #### Change Cipher Specs
 
-![Pasted image 20250223013536.png](images/Pasted image 20250223013536.png)
+![[Pasted image 20250223013536.png]]
 
-![Pasted image 20250223013707.png](images/Pasted image 20250223013707.png)
+![[Pasted image 20250223013707.png]]
 
 #### Alert Record
 
-![Pasted image 20250223014244.png](images/Pasted image 20250223014244.png)
+![[Pasted image 20250223014244.png]]
 
-![Pasted image 20250223014626.png](images/Pasted image 20250223014626.png)
+![[Pasted image 20250223014626.png]]
 
 #### Handshake Records
 
-![Pasted image 20250223020122.png](images/Pasted image 20250223020122.png)
+![[Pasted image 20250223020122.png]]
 
 - There are <font color="cyan">certain fields</font> which sends encrypted.
 
-![Pasted image 20250223020233.png](images/Pasted image 20250223020233.png)
+![[Pasted image 20250223020233.png]]
 
 - Client Hello
 
-![Pasted image 20250223020950.png](images/Pasted image 20250223020950.png)
+![[Pasted image 20250223020950.png]]
 
 - Server hello
 
-![Pasted image 20250223021023.png](images/Pasted image 20250223021023.png)
+![[Pasted image 20250223021023.png]]
 
 - Certificate
 
-![Pasted image 20250223021053.png](images/Pasted image 20250223021053.png)
+![[Pasted image 20250223021053.png]]
 
 - Server Key Exchange
 
-![Pasted image 20250223021126.png](images/Pasted image 20250223021126.png)
+![[Pasted image 20250223021126.png]]
 
 - Server Hello Done
 
-![Pasted image 20250223021230.png](images/Pasted image 20250223021230.png)
+![[Pasted image 20250223021230.png]]
 
 - Client Key Exchange
 
-![Pasted image 20250223021153.png](images/Pasted image 20250223021153.png)
+![[Pasted image 20250223021153.png]]
 
 #### Application Data
 
-![Pasted image 20250223021714.png](images/Pasted image 20250223021714.png)
-![Pasted image 20250223021930.png](images/Pasted image 20250223021930.png)
+![[Pasted image 20250223021714.png]]
+![[Pasted image 20250223021930.png]]
 
 - This MAC-then-Encrypt is vulnerable to **Padding Oracle On Downgraded Legacy Encryption (Poodle)** attack because padding is seprated.
 
-![Pasted image 20250223022101.png](images/Pasted image 20250223022101.png)
-![Pasted image 20250223022333.png](images/Pasted image 20250223022333.png)
+![[Pasted image 20250223022101.png]]
+![[Pasted image 20250223022333.png]]
 
 ### Actual Handshake
 
 - Working Flow of TLS Handshake
 
-![TLS Handshake Excalidraw](images/TLS Handshake Excalidraw)
+![[TLS Handshake Excalidraw]]
 
 #### Client Hello
 
-![Pasted image 20250223140247.png](images/Pasted image 20250223140247.png)
+![[Pasted image 20250223140247.png]]
 
 #### Server Hello
 
-![Pasted image 20250223140614.png](images/Pasted image 20250223140614.png)
+![[Pasted image 20250223140614.png]]
 
 #### Certificate
 
-![Pasted image 20250223141619.png](images/Pasted image 20250223141619.png)
+![[Pasted image 20250223141619.png]]
 
 #### Server Hello Done
 
-![Pasted image 20250223141827.png](images/Pasted image 20250223141827.png)
+![[Pasted image 20250223141827.png]]
 
 #### Client Key Exchange
 
 - Client Generates a **PreMasterSecret** 
 	- Used for generate session keys
 
-![Pasted image 20250223142543.png](images/Pasted image 20250223142543.png)
+![[Pasted image 20250223142543.png]]
 
-![Pasted image 20250223152103.png](images/Pasted image 20250223152103.png)
+![[Pasted image 20250223152103.png]]
 
 >[!question]
 >Why 4 Symmetric Session Keys??
@@ -648,21 +650,22 @@ TLS 1.3 was designed to eliminate older vulnerabilities, but new theoretical att
 
 - Indicates that client has everything necessary to speak securely
 
-![Pasted image 20250223152201.png](images/Pasted image 20250223152201.png)
+![[Pasted image 20250223152201.png]]
 
 #### Finished from Client to Server
 
-![Pasted image 20250223160634.png](images/Pasted image 20250223160634.png)
+![[Pasted image 20250223160634.png]]
 
 #### Change Cipher Spec from Server to Client
 
 - Indicates that server has everything necessary to speak securely
 
-![Pasted image 20250223160738.png](images/Pasted image 20250223160738.png)
+![[Pasted image 20250223160738.png]]
 #### Finished from Server to Client
 
-![Pasted image 20250223160829.png](images/Pasted image 20250223160829.png)
+![[Pasted image 20250223160829.png]]
 
 #### Application Data
 
-![Pasted image 20250223161442.png](images/Pasted image 20250223161442.png)
+![[Pasted image 20250223161442.png]]
+
