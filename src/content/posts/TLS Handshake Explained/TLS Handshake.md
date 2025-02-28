@@ -8,6 +8,14 @@ category: Concept Explained
 draft: false
 ---
 # TLS Structure and Working
+
+
+<img src="TLS Handshake.svg">
+
+```
+Note > For better appearance, download the image.
+```
+
 ## Cipher Suites in Handshake
 
 ![Pasted image 20250222192328](images/Pasted%20image%2020250222192328.png)
@@ -47,17 +55,18 @@ Cipher Suites (21 suites)
     Cipher Suite: TLS_EMPTY_RENEGOTIATION_INFO_SCSV (0x00ff)
 ```
 
->[!seealso]
-><b>Transport Layer Security (TLS) Parameters</b> : https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml
->
-><b>TLS Cipher Suites Pre-build List</b> : >(https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4)
+
+- References 
+	- <b>Transport Layer Security (TLS) Parameters</b> : https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml
+	- <b>TLS Cipher Suites Pre-build List</b> : >(https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4)
 
 ### Key Exchange
 
 1. First, We need to generate `seed value (Secret key for HMAC, Secret key for Symmetric Encryption)`
 
->[!note]
->From this seed value any number of keys can be generate in future for both parties so key exchange is one time process.
+```
+Note > From this seed value any number of keys can be generate in future for both parties so key exchange is one time process.
+```
 
 - Here are numbers of algorithms for key exchange,
 	1. PSK
@@ -145,25 +154,23 @@ Cipher Suites (21 suites)
 
 ![Pasted image 20250222181937](images/Pasted%20image%2020250222181937.png)
 
->[!summary]
->Between RSA and DSS, RSA better performing in terms of security and largely acceptance
+
+- Summary :- **Between RSA and DSS, RSA better performing in terms of security and largely acceptance**
 
 
 #### RSA vs ECDSA
 
 ![Pasted image 20250222182217](images/Pasted%20image%2020250222182217.png)
 
->[!summary]
->Between RSA and ECDSA .. choose ECDSA
+- Summary :-  **Between RSA and ECDSA .. choose ECDSA**
 
->[!note]
->BUT, you don't actually have to choose - you can use both!
->
->Cipher Suite is selected before Certificate is sent
->
->If client only supports RSA: present RSA certificate
->
->If client supports RSA or ECDSA: present ECDSA certificate
+```
+Note > 
+> BUT, you don't actually have to choose - you can use both!
+> Cipher Suite is selected before Certificate is sent
+> If client only supports RSA: present RSA certificate
+> If client supports RSA or ECDSA: present ECDSA certificate
+```
 
 #### Avoid, Accept, Prefer
 
@@ -247,10 +254,9 @@ Key Sizes
 
 #### Summarization
 
->[!summary]
-><b>AEAD (Authenticated Encryption with Associated Data)</b> ciphers provide both `confidentiality` and `integrity` by combining `encryption` and `authentication` in a single operation.
->
->Examples: ChaCha20-Poly1305, AES-CCM (Counter with CBC-MAC Mode), AES-GCM (Galois/Counter Mode), AES-GCM-SIV (Synthetic Initialization Vector), OCB (Offset Codebook Mode)
+- Summary :-
+	- <b>AEAD (Authenticated Encryption with Associated Data)</b> ciphers provide both `confidentiality` and `integrity` by combining `encryption` and `authentication` in a single operation.
+	- Examples: ChaCha20-Poly1305, AES-CCM (Counter with CBC-MAC Mode), AES-GCM (Galois/Counter Mode), AES-GCM-SIV (Synthetic Initialization Vector), OCB (Offset Codebook Mode)
 
 #### Avoid, Accept, Prefer
 
@@ -456,13 +462,13 @@ Nmap done: 1 IP address (1 host up) scanned in 37.05 seconds
 
 
 
->[!summary]
->Conclusion:
->1. Also TLS 1.0 and 1.1 is supported but not in used by Netflix.
->2. TLS 1.2 is secure but should prioritize AES-GCM over CBC.
->3. TLS 1.3 is the best, with ChaCha20 and AES-GCM offering strong encryption.
->4. Server prefers TLS 1.2 and 1.3 ciphers, but TLS 1.3 ciphers are client-driven
->If Netflix's clients support TLS 1.3, they should prioritize ChaCha20 or AES-GCM for maximum security.
+- Summary 
+	- **Conclusion**:
+		1. **Also TLS 1.0 and 1.1 is supported but not in used by Netflix.**
+		2. **TLS 1.2 is secure but should prioritize AES-GCM over CBC.**
+		3. **TLS 1.3 is the best, with ChaCha20 and AES-GCM offering strong encryption.**
+		4. **Server prefers TLS 1.2 and 1.3 ciphers, but TLS 1.3 ciphers are client-driven**
+- **If Netflix's clients support TLS 1.3, they should prioritize ChaCha20 or AES-GCM for maximum security.**
 
 ## Attacks on TLS
 
@@ -632,16 +638,18 @@ TLS 1.3 was designed to eliminate older vulnerabilities, but new theoretical att
 
 ![Pasted image 20250223152103](images/Pasted%20image%2020250223152103.png)
 
->[!question]
->Why 4 Symmetric Session Keys??
+`Why 4 Symmetric Session Keys??`
 
->[!abstract]
->Client and Server creates `two different tunnel` for data transfer one for `client to server` and another for `server to client`.
->
->If Attacker by chance successful to bruteforce one pair or keys then they only able to compromise half of conversations. 
+```
+Abstract >
+> Client and Server creates two different tunnel for data transfer one for client to server` and another for server to client.
+> If Attacker by chance successful to bruteforce one pair or keys then they only able to compromise half of conversations. 
+```
 
->[!hint]
->In this demonstration we have used RSA but there are other algorithms like ECDHE and DHE which has some different mechanisms.
+```
+Hint >
+> In this demonstration we have used RSA but there are other algorithms like ECDHE and DHE which has some different mechanisms.
+```
 
 #### Change Cipher Spec from Client to Server
 
