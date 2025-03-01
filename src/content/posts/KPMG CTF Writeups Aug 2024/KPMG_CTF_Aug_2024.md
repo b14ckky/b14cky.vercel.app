@@ -2,7 +2,7 @@
 title: KPMG CTF Writeups Aug 2024
 published: 2024-04-01
 description: Some Writeups of KPMG 2024.
-tags: [KPMG, Aug 2024, Cloud, OSINT, Web, ISC, Mobile, OT, Cryptography]
+tags: [KPMG, Aug 2024, Cloud, OSINT, Web, Industrial-Control-System, Mobile, Operational-Technology, Cryptography]
 image: "images/cover.png"
 category: CTF Writeups
 draft: false
