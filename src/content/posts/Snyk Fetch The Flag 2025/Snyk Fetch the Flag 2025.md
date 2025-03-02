@@ -58,7 +58,7 @@ draft: false
 flag{c50d82c0a25f3e644d0702b41dbd085a}
 ```
 
-### **2. Read The Rules**
+### 2. Read The Rules
 
 ![Screenshot 2025-02-28 200021.png](Files/Screenshot_2025-02-28_200021.png)
 
@@ -142,7 +142,7 @@ was one From this
 flag{89e575e7272b07a1d33e41e3647b3826}
 ```
 
-### **6. Screaming Crying Throwing up**
+### 6. Screaming Crying Throwing up
 
 ![image.png](Files/image%204.png)
 
@@ -873,7 +873,7 @@ flag{8e9e2e4ec228db4207791eOa534716c3}
 
 ## Reverse Engineering
 
-### 1. **An Offset Amongst Friends**
+### 1. An Offset Amongst Friends
 
 ![image.png](Files/image%2033.png)
 
