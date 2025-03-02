@@ -22,6 +22,9 @@ draft: false
 
 # Snyk Fetch the Flag 2025
 
+
+![image.png](Files/banner.png)
+
 ### Into to Our Team:
 
 1. Jeel (`B14cky`) : https://b14cky.vercel.app/
