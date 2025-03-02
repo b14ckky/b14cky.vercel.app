@@ -43,7 +43,7 @@ draft: false
 
 - Hex Data
 
-```mathematica
+```
 07 0d 00 06 1a 02 54 51 05 59 53 02 51 00 53 54 07 52 04 
 57 55 55 05 51 56 51 53 03 55 50 05 03 05 51 59 54 00 1c 6b
 ```
@@ -987,7 +987,7 @@ int main(void) {
 
 - This code is just converting the `little-endian hex to big-endian` notation. and also `subtracting 1 from each byte and combining it as ASCII`.
 
-```mathematica
+```
                  ((LE to BE) - 1)
 				        
 35 36 64 7c 68 62 6d 67 	==> 	66 6c 61 67 7b 63 35 34
@@ -998,7 +998,7 @@ int main(void) {
 7e 64 38 31 39 34 			  ==> 	33 38 30 37 63 7d
 ```
 
-```mathematica
+```
 66 6c 61 67 7b 63 35 34 33 31 35 34 38 32 35 33 31 63 31 
 31 61 37 36 61 65 61 61 38 32 38 65 34 33 38 30 37 63 7d
 ```
@@ -1139,7 +1139,7 @@ flag{45d23c1f6789badc1234567890123456}
     - The value is then moved around different registers.
 2. Computation:
 
-```nasm
+```
 13d7:  c1 e0 02   shl    $0x2,%eax   # Multiply input by 4
 13da:  01 d0      add    %edx,%eax   # Add original input (result = 5 * input)
 13dc:  83 c0 04   add    $0x4,%eax   # Add 4 (result = 5 * input + 4)
@@ -1149,7 +1149,7 @@ flag{45d23c1f6789badc1234567890123456}
 
 1. Division and Rounding:
 
-```nasm
+```
 13e7:  c1 ea 1f   shr    $0x1f,%edx   # Handles negative input adjustment
 13ec:  d1 f8      sar    $1,%eax      # Divide by 2 (Arithmetic Shift Right)
 
@@ -1158,7 +1158,7 @@ flag{45d23c1f6789badc1234567890123456}
 
 1. Final Checks
 
-```nasm
+```
 13f1:  83 6d fc 0a   subl   $0xa,-0x4(%rbp)   # Subtract 10
 13f5:  83 7d fc 2a   cmpl   $0x2a,-0x4(%rbp)  # Compare with 42
 
@@ -1168,7 +1168,7 @@ Rearranging:    final result = 52
 
 1. Solving for Input:
 
-```mathematica
+```
 (5 x input + 4) / 2 = 52
 5 x input + 4 = 52 * 2 = 104
 5 x input = 104 - 4 = 100
@@ -1221,7 +1221,7 @@ flag{h556cdd`=ag.c53664:45569368391gc}
 2. It shifts the first character left by 8 bits (`c1 e0 08`), effectively making it the high byte of a 16-bit integer.
 3. It ORs (`09 d0`) the second character with this shifted value, combining them into a single `short` (16-bit) value.
 4. It returns this combined value.
-    - **Mathematically**, $encodedValue =(char1≪8)∣char2$
+    - **lly**, $encodedValue =(char1≪8)∣char2$
     - **For eg.**  'H' (ASCII 72) and 'i' (ASCII 105)
         
             $encodedValue: (72≪8)∣105=(18432)∣(105)=18537$
@@ -1234,7 +1234,7 @@ flag{h556cdd`=ag.c53664:45569368391gc}
     - Contents of encflag.txt
     
 
-```nasm
+```
 21608, 26995, 8297, 29472, 24864, 27759, 28263, 8289, 28260, 8291,
     28526, 30319, 27765, 25701, 25632, 30561, 31008, 29807, 8308, 29305,
     8289, 28260, 8296, 26980, 25888, 29800, 25888, 26220, 24935, 14950,
@@ -1456,7 +1456,7 @@ void decode_flag(char *output) {
 - From Here we directly get the flag but maybe this is not intendent way,
 - `Just Converting this to LE to BE and XOR with 0x42`
 
-```mathematica
+```
                  ((LE to BE) - 1)
 
 7b 7a 71 26 76 75 72 24 ==> 24 72 75 76 26 71 7a 7b 
