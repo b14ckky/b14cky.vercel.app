@@ -725,7 +725,7 @@ flag {982e3b7286ee603d8539f987b65b90d4}
 
 - I make a simple script for this using `pwntools`,
 
-[pwn1.py](Files/pwn1.py)
+[pwn1.py](/uploads/Snyk_2025/pwn1.py)
 
 ```python
 from pwn import *
@@ -830,6 +830,8 @@ undefined4 getFlag(int param_1,int param_2)
 ```
 
 - By looking the code we can say that `this not a straight forward` but we also need `pass the parameters to pass the condition` so make a script for it.
+
+[pwn1.py](/uploads/Snyk_2025/pwn2.py)
 
 ```python
 from pwn import *
