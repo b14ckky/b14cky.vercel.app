@@ -1690,7 +1690,7 @@ flag{a3ce310e9a0dc53bc030847192e2f585}
 
 Given File: mountains.json 
 
-[mountains.json](Files/mountains.json)
+[mountains.json](Files/mountains.txt)
 
 - **Understanding the question and execution flow**
 
