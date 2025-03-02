@@ -20,7 +20,7 @@ category: CTF Writeups
 draft: false
 ---
 
-# # Snyk Fetch the Flag 2025
+# Snyk Fetch the Flag 2025
 
 ### Into to Our Team:
 
