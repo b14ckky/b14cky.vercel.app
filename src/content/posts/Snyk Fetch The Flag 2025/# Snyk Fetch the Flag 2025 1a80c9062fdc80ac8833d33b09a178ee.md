@@ -39,7 +39,7 @@ draft: false
 
 - Given File: flag.txt.encry
 
-[flag.txt.encry](data/flag.txt.encry)
+[flag.txt.encry](../../../../data/flag.txt.encry)
 
 - Hex Data
 
@@ -97,7 +97,7 @@ flag{d7aa66eaOedd20221820c84ecc47aee9}
 
 - Given File: challenge.zip
 
-[CTF101.zip](data/CTF101.zip)
+[CTF101.zip](../../data/CTF101.zip)
 
 - By analyzing the `source code`, I discovered that the application was vulnerable to **`command injection`**.
 
@@ -146,7 +146,7 @@ flag{89e575e7272b07a1d33e41e3647b3826}
 
 ![image.png](Files/image%204.png)
 
-[screaming.bin](data/screaming.bin)
+[screaming.bin](../../data/screaming.bin)
 
 ```bash
 a̮ăaa̋{áa̲aȧa̮ȧaa̮áa̲a̧ȧȧa̮ȧaa̲a̧aa̮ȧa̲aáa̮a̲aa̲a̮aaa̧}
@@ -175,7 +175,7 @@ flag{edabfbafedcbbfbadcafbdaefdadfaac}
 
 - Given Files: Source code of the web app.
 
-[challenge.zip](data/challenge.zip)
+[challenge.zip](../../data/challenge.zip)
 
 - Explored the webapp, different pages. Found a `file upload functionality` at **`/upload.php`**
 
@@ -282,7 +282,7 @@ flag{65586Ø8db04Ød1c64358ad536a8eØ6c6)
 
 - Given File: challenge.zip
 
-[unfurl.zip](data/unfurl.zip)
+[unfurl.zip](../../data/unfurl.zip)
 
 - When I first saw the `Open Source Link Unfurler` challenge, it seemed like a simple web application that fetches metadata from URLs. However, after diving into the code, I discovered a complex vulnerability chain involving `SSRF (Server-Side Request Forgery)` and `command injectio` that eventually led to capturing the flag.
 
@@ -435,7 +435,7 @@ flag{e1c96ccca8777b15bd0b0c7795d018ed}
 
 - Given File: Challenge.zip
 
-[timeoff.zip](data/timeoff.zip)
+[timeoff.zip](../../data/timeoff.zip)
 
 - This was a challenging and fun web exploitation challenge involving a Ruby on Rails time-off management application. The goal was to find and exploit a vulnerability to retrieve a flag hidden somewhere in the system. The challenge required careful code analysis and exploiting a path traversal vulnerability.
 
@@ -541,7 +541,7 @@ flag{52948d88ee74b9bdab130c35c88bd406}
 
 Given File: Challange.zip
 
-[Weblog.zip](data/Weblog.zip)
+[Weblog.zip](../../data/Weblog.zip)
 
 - This CTF challenge involved exploiting multiple vulnerabilities in a Flask web application to gain access to the admin panel and ultimately perform command injection to retrieve the flag.
 
@@ -619,7 +619,7 @@ flag{b06fbe98752ab13d0fb8414fb55940f3}
 
 - Given File: Challange.zip
 
-[Plantly.zip](data/Plantly.zip)
+[Plantly.zip](../../data/Plantly.zip)
 
 - When I first looked at the Plantly e-commerce site, it seemed like your typical plant shop application - user registration, product browsing, and a checkout system. Little did I know that hidden in this garden of code was a dangerous vulnerability just waiting to be exploited. This writeup details my journey through discovering and exploiting a Server-Side Template Injection (SSTI) vulnerability to capture the flag.
 
@@ -704,7 +704,7 @@ flag {982e3b7286ee603d8539f987b65b90d4}
 
 - Given File: Echo
 
-[Echo.zip](data/Echo.zip)
+[Echo.zip](../../data/Echo.zip)
 
 - We have given a ELF binary
 
@@ -722,7 +722,7 @@ flag {982e3b7286ee603d8539f987b65b90d4}
 
 - I make a simple script for this using `pwntools`,
 
-[pwn1.py](data/pwn1.py)
+[pwn1.py](../../data/pwn1.py)
 
 ```python
 from pwn import *
@@ -781,7 +781,7 @@ flag{4f4293237e37d06d733772a087299f17}
 
 - Given File: challenge.elf
 
-[challenge.zip](data/challenge%201.zip)
+[challenge.zip](../../data/challenge%201.zip)
 
 - The Given file is ELF file and when i check the binary security using `checksec` i founf that there is ony one `RELRO security is implemented partially`.
 
@@ -874,7 +874,7 @@ flag{8e9e2e4ec228db4207791eOa534716c3}
 
 - Given File: an-offset
 
-[an-offset.zip](data/an-offset.zip)
+[an-offset.zip](../../data/an-offset.zip)
 
 - It is a ELF file which kind exe of linux.
 
@@ -1010,7 +1010,7 @@ flag{c54315482531c11a76aeaa828e43807c}
 
 - Given File: challenge.psl
 
-[challenge.ps1](data/challenge.ps1)
+[challenge.ps1](../../data/challenge.ps1)
 
 - After opening this in editor i found that there is `long base64 encoded string`.
 - So i tries to decode it.
@@ -1088,7 +1088,7 @@ flag{45d23c1f6789badc1234567890123456}
 
 - Given File: string-me-along
 
-[string-me-along.zip](data/string-me-along.zip)
+[string-me-along.zip](../../data/string-me-along.zip)
 
 - As per challenge description i got a hint that using `string` command maybe something gonna reveal.
 
@@ -1110,7 +1110,7 @@ flag{45d23c1f6789badc1234567890123456}
 
 - Given File: math4me
 
-[math4me](data/math4me.txt)
+[math4me](../../data/math4me.txt)
 
 - First check the type of file and how its working. Its an ELF (Executable and Linked format) file. So when executed it, it asks for an special number, which I think we need to find to get the flag.
 
@@ -1185,7 +1185,7 @@ flag{h556cdd`=ag.c53664:45569368391gc}
 
 - Given Files: encflag.txt and letters2nums.elf
 
-[encflag.txt](data/encflag.txt)
+[encflag.txt](../../data/encflag.txt)
 
 [letters2nums](Files/letters2nums.txt)
 
@@ -1282,7 +1282,7 @@ flag{3b050f5a716e51c89e9323baf3a7b73b}
 
 - Given File: either-or
 
-[either-or.zip](data/either-or.zip)
+[either-or.zip](../../data/either-or.zip)
 
 - I tried open it in ghidra and try to analyze it and what i found is main function.
 
@@ -1528,7 +1528,7 @@ flag{f074d38932164b278a508df11b5eff89}
 
 - Given File: freeRangePackets.pcapng
 
-[freeRangePackets.pcapng](data/freeRangePackets.pcapng)
+[freeRangePackets.pcapng](../../data/freeRangePackets.pcapng)
 
 - This Pcap file contains the conversation of bluetooth protocol and our task is to carve the flag from payload part because it is spreaded over all in payload of Bluetooth L2CAP Protocl’s payload as per the image.
 - So i carve this data using https://tshark.dev/ `Tshark` Tool and some bash filtering command.
@@ -1596,7 +1596,7 @@ flag{b5be72ab7e0254c056ffb57a0db124ce}
 
 - Given File: click.pcapng
 
-[click.pcapng](data/click.pcapng)
+[click.pcapng](../../data/click.pcapng)
 
 - When i open this pcapng in wireshark i found that this is `USB Protocol` conversation and i have already solved such challenge and also seen the video of one and only https://www.youtube.com/watch?v=0HXL4RGmExo so i am familier with this technique
 
@@ -1685,7 +1685,7 @@ flag{a3ce310e9a0dc53bc030847192e2f585}
 
 Given File: mountains.json 
 
-[mountains.json](data/mountains.json)
+[mountains.json](../../data/mountains.json)
 
 - **Understanding the question and execution flow**
 
