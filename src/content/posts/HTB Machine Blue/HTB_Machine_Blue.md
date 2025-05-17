@@ -2,7 +2,7 @@
 title: HTB Machine Blue May 2025
 published: 2025-05-17
 description: Writeup of HTB Blue Machine.
-tags: [B2R, HTB, Easy, Retired, Windows, Metasploit, SMB, RCE, MS17-010, Eternal Blue)]
+tags: [B2R, HTB, Easy, Retired, Windows, Metasploit, SMB, RCE, MS17-010, Eternal Blue]
 image: "images/cover.png"
 category: HTB Machine Writeups
 draft: false
