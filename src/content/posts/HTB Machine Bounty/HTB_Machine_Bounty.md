@@ -119,7 +119,7 @@ python CVE-2015-1635-POC.py -t 10.10.10.93
 - I had been following a writeup that went down this same unfruitful path, and I confidently followed along. 😗
 - My Reaction is Like,
 
-![[shock-shocker.gif | 500]]
+![shock-shocker.gif](images/shock-shocker.gif)
 
 - The actual vulnerability was much simpler - there's an ASPX page called `transfer.aspx` that allows file uploads.
 - Unfortunately, my directory discovery tools missed this file despite trying different wordlists and techniques. 😒
