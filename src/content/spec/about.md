@@ -1,11 +1,11 @@
 # About Me
 
 Hello World , I'm The Jeel [a.k.a `b14cky`]
-<br>I Have Completed My B.TECH in CSE From Nirma University(https://technology.nirmauni.ac.in/).
-<br>I Have Completed My Diploma in CSE From Marwadi University(https://www.marwadiuniversity.ac.in/diploma/computer-engineering/).
-<br>CTF player for [K4rm4](https://ctftime.org/team/131903)
-<br>Hack The Box: (https://app.hackthebox.com/users/507787)
-<br>Try Hack Me: (https://tryhackme.com/r/p/zeelnariya)
+- <br>I Have Completed My B.TECH in CSE From Nirma University(https://technology.nirmauni.ac.in/).
+- <br>I Have Completed My Diploma in CSE From Marwadi University(https://www.marwadiuniversity.ac.in/diploma/computer-engineering/).
+- <br>CTF player for [K4rm4](https://ctftime.org/team/131903)
+- <br>Hack The Box: (https://app.hackthebox.com/users/507787)
+- <br>Try Hack Me: (https://tryhackme.com/r/p/zeelnariya)
 
 **ɪ ᴀᴍ ʜᴇʀᴇ ᴛᴏ ꜱʜᴀʀᴇ ᴋɴᴏᴡʟᴇᴅɢᴇ -- ᴀɴᴅ ᴛᴏ ʟᴇᴀʀɴ.**
 
