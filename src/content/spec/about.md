@@ -1,17 +1,18 @@
 # About Me
 
 Hello World , I'm The Jeel [a.k.a `b14cky`]
-<br>I am currently a student at Nirma University(https://technology.nirmauni.ac.in/) doing in Computer Science and Engineering.
+<br>I Have Completed My B.TECH in CSE From Nirma University(https://technology.nirmauni.ac.in/).
+<br>I Have Completed My Diploma in CSE From Marwadi University(https://www.marwadiuniversity.ac.in/diploma/computer-engineering/).
 <br>CTF player for [K4rm4](https://ctftime.org/team/131903)
-<br>HTB: (https://app.hackthebox.com/users/507787)
-<br>THM: (https://tryhackme.com/r/p/zeelnariya)
+<br>Hack The Box: (https://app.hackthebox.com/users/507787)
+<br>Try Hack Me: (https://tryhackme.com/r/p/zeelnariya)
 
 **ɪ ᴀᴍ ʜᴇʀᴇ ᴛᴏ ꜱʜᴀʀᴇ ᴋɴᴏᴡʟᴇᴅɢᴇ -- ᴀɴᴅ ᴛᴏ ʟᴇᴀʀɴ.**
 
 ### Feel free to reach out to me via
 >
 > - Email: <code>zeelnariya2424@gmail.com</code>
-> - Discord: <code>[zeel2686](https://discordapp.com/users/755438740767506443)</code>
+> - Discord: <code>[0xb14cky](https://discordapp.com/users/755438740767506443)</code>
 
 <style>
 .color1 { color: #d5bb70; }
