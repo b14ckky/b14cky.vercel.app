@@ -5,11 +5,11 @@ description: Writeup of HTB Jerry Machine.
 tags:
   - B2R
   - HTB
+  - Easy
+  - Retired
+  - Windows
   - Tomcat
   - Apache
-  - Easy
-  - Windows
-  - Retired
   - Metasploit
   - CVE-2009-3548
   - Path-Traversal-To-RCE
