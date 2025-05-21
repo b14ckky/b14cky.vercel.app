@@ -1,3 +1,25 @@
+---
+title: HTB Machine Active May 2025
+published: 2025-05-21
+description: Writeup of HTB Active Machine.
+tags:
+  - B2R
+  - HTB
+  - Easy
+  - Windows
+  - Retired
+  - MS14-025
+  - Active-Directory
+  - CVE-2014-1812
+  - SMB
+  - impacket
+image: images/cover.png
+category: HTB Machine Writeups
+draft: false
+---
+
+
+
 # Scanning
 
 ## Rustscan
@@ -221,8 +243,6 @@ smbclient //10.10.10.100/Users -U active.htb\\SVC_TGS%GPPstillStandingStrong2k18
 ## Kerberoasting
 
 ### Background
-
-Protocol Explained: [[Kerberos Protocol]]
 
 - **Kerberos is a protocol for authentication used in Windows Active Directory environments** (though it can be used for auth to Linux hosts as well).
 - In 2014, **Tim Medin presented an attack on Kerberos he called** [Kerberoasting](https://www.redsiege.com/wp-content/uploads/2020/08/Kerberoastv4.pdf).
