@@ -8,7 +8,7 @@ rustscan -a 10.10.10.100 -b 100
 
 ![Pasted image 20250521153343.png](images/Pasted_image_20250521153343.png)
 
-- Found a whopping 33 open ports! But who has time to check them all? Let's focus on the juicy ones.
+- Found a whopping 23 open ports! But who has time to check them all? Let's focus on the juicy ones.
 - Time to be selective and target what actually matters. Quality over quantity, folks!
 
 ## Nmap
