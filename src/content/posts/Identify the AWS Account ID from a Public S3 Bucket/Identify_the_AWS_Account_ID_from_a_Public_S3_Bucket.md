@@ -3,7 +3,7 @@ title: Pwnedlabs Machine Identify the AWS Account ID from a Public S3 Bucket Jun
 published: 2025-06-12
 description: Writeup of Pwnedlabs Identify the AWS Account ID from a Public S3 Bucket Machine.
 tags:
-  - Cloud
+  - Cloud-Security
   - PwnedLabs
   - S3
   - AWS
