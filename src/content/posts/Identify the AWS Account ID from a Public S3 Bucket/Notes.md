@@ -14,6 +14,8 @@ category: Pwnedlabs Machine Writeups
 draft: false
 ---
 
+![cover.png](images/cover.png)
+
 # Scenario
 
 - The ability to expose and leverage even the smallest oversights is a coveted skill in cybersecurity.
@@ -49,7 +51,7 @@ Understanding the significance of AWS Account ID exposure is crucial for both at
 rustscan -a 54.204.171.32 -b 100 -- -A 
 ```
 
-![[Pasted image 20250612154527.png]]
+![Pasted image 20250612154527.png](images/Pasted_image_20250612154527.png)
 
 ## Nmap
 
@@ -59,7 +61,7 @@ rustscan -a 54.204.171.32 -b 100 -- -A
 nmap -T5 -A -p80 -oA nmap/80 54.204.171.32 -Pn
 ```
 
-![[Pasted image 20250612154814.png]]
+![Pasted image 20250612154814.png](images/Pasted_image_20250612154814.png)
 
 **Scan Results Analysis:**
 
@@ -89,7 +91,7 @@ sudo apt install awscli
 aws configure 
 ```
 
-![[Pasted image 20250612151432.png]]
+![Pasted image 20250612151432.png](images/Pasted_image_20250612151432.png)
 
 **Configuration Details:**
 
@@ -106,7 +108,7 @@ aws configure
 aws sts get-caller-identity
 ```
 
-![[Pasted image 20250612151621.png]]
+![Pasted image 20250612151621.png](images/Pasted_image_20250612151621.png)
 
 **Response Analysis:**
 
@@ -130,13 +132,13 @@ This reveals:
 
 - Browsing to the target IP reveals a web application:
 
-![[Pasted image 20250612163727.png]]
+![Pasted image 20250612163727.png](images/Pasted_image_20250612163727.png)
 
 ## Source Code Inspection
 
 - Examining the HTML source code reveals references to an S3 bucket named `mega-big-tech`:
 
-![[Pasted image 20250612155415.png]]
+![Pasted image 20250612155415.png](images/Pasted_image_20250612155415.png)
 
 **Why Check Source Code:**
 
@@ -152,7 +154,7 @@ This reveals:
 aws s3 ls s3://mega-big-tech --recursive --no-sign-request
 ```
 
-![[Pasted image 20250612155619.png]]
+![Pasted image 20250612155619.png](images/Pasted_image_20250612155619.png)
 
 **Command Breakdown:**
 
@@ -220,7 +222,7 @@ pip install s3-account-search
 s3-account-search arn:aws:iam::427648302155:role/LeakyBucket s3://mega-big-tech
 ```
 
-![[Pasted image 20250612162844.png]]
+![Pasted image 20250612162844.png](images/Pasted_image_20250612162844.png)
 
 **Command Explanation:**
 
