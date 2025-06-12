@@ -76,8 +76,8 @@ The engagement provided the following AWS credentials:
 
 
 - IP address: `54.204.171.32`
-- Access key ID: `AKIAWHEOTHRFW4CEP***(All Ready Given)`
-- Secret access key: `UdUVhr+voMltL8PlfQqHFSf4N9casfzUkwsW4***(All Ready Given)`
+- Access key ID: `AKI*****************(All Ready Given)`
+- Secret access key: `UdUVhr+voMlt****************************(All Ready Given)`
 
 
 ## AWS CLI Setup
