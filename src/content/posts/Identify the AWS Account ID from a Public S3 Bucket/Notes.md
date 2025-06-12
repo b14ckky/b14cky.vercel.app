@@ -13,6 +13,8 @@ image: images/cover.png
 category: Pwnedlabs Machine Writeups
 draft: false
 ---
+```table-of-contents
+```
 
 # Scenario
 
@@ -74,11 +76,7 @@ nmap -T5 -A -p80 -oA nmap/80 54.204.171.32 -Pn
 
 The engagement provided the following AWS credentials:
 
-
-- IP address: `54.204.171.32`
-- Access key ID: `********************(All Ready Given)`
-- Secret access key: `****************************************(All Ready Given)`
-
+![Pasted image 20250612171550.png](images/Pasted_image_20250612171550.png)
 
 ## AWS CLI Setup
 
