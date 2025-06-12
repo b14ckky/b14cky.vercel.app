@@ -14,7 +14,7 @@ category: Pwnedlabs Machine Writeups
 draft: false
 ---
 
-![cover.png](images/cover.png)
+![task.png](images/task.png)
 
 # Scenario
 
