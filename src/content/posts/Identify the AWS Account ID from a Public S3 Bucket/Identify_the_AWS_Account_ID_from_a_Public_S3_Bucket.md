@@ -74,11 +74,11 @@ nmap -T5 -A -p80 -oA nmap/80 54.204.171.32 -Pn
 
 The engagement provided the following AWS credentials:
 
-```yml
-IP address: 54.204.171.32
-Access key ID: AKIAWHEOTHRFW4CEP7HK
-Secret access key: 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
-```
+
+- IP address: `54.204.171.32`
+- Access key ID: `AKIAWHEOTHRFW4CEP7HK`
+- Secret access key: `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`
+
 
 ## AWS CLI Setup
 
