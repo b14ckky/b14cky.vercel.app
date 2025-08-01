@@ -147,11 +147,12 @@
         dark:bg-[oklch(0.30_0.02_var(--hue))] dark:hover:bg-[oklch(0.35_0.03_var(--hue))] dark:active:bg-[oklch(0.40_0.03_var(--hue))]
     }*/
 
-    .btn-regular-dark {
+.btn-regular-dark {
   @apply flex items-center justify-center
-  bg-[oklch(0.6_0.25_var(--hue))] hover:bg-[oklch(0.65_0.25_var(--hue))] active:bg-[oklch(0.7_0.25_var(--hue))]
-  dark:bg-[oklch(0.45_0.25_var(--hue))] dark:hover:bg-[oklch(0.5_0.25_var(--hue))] dark:active:bg-[oklch(0.55_0.25_var(--hue))]
+  bg-[oklch(0.627_0.257_29.233)] hover:bg-[oklch(0.65_0.257_29.233)] active:bg-[oklch(0.68_0.257_29.233)]
+  dark:bg-[oklch(0.5_0.2_29.233)] dark:hover:bg-[oklch(0.55_0.2_29.233)] dark:active:bg-[oklch(0.6_0.2_29.233)]
 }
+
 
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
