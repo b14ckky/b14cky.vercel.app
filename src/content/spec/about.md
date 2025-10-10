@@ -1,12 +1,15 @@
 # About Me
 
-Hello World , I'm The Jeel [a.k.a `b14cky`]
-- I Have Completed My B.TECH in CSE From Nirma University(https://technology.nirmauni.ac.in/).
-- I Have Completed My Diploma in CSE From Marwadi University(https://www.marwadiuniversity.ac.in/diploma/computer-engineering/).
+Hello World, I'm The Jeel [a.k.a. `b14cky`].
+
+- I am currently pursuing my M.TECH in cyber security from National Forensic Science University (http://nfsu.ac.in/).
+- I Have Completed My B.TECH in CSE From Nirma University (https://technology.nirmauni.ac.in/).
+- I Have Completed My Diploma in CSE From Marwadi University (https://www.marwadiuniversity.ac.in/diploma/computer-engineering/).
 - CTF player for [K4rm4](https://ctftime.org/team/131903)
 - Hack The Box: (https://app.hackthebox.com/users/507787)
-- Try Hack Me: (https://tryhackme.com/r/p/zeelnariya)
-
+- Try Hack Me: (https://tryhackme.com/p/0xb14cky)
+- Blue Team Labs Online: (https://blueteamlabs.online/public/user/62dcd6dcba8a768fefe423) 
+- Cyber Defenders: (https://cyberdefenders.org/p/0xb14cky)
 **ɪ ᴀᴍ ʜᴇʀᴇ ᴛᴏ ꜱʜᴀʀᴇ ᴋɴᴏᴡʟᴇᴅɢᴇ -- ᴀɴᴅ ᴛᴏ ʟᴇᴀʀɴ.**
 
 ### Feel free to reach out to me via
@@ -22,4 +25,4 @@ Hello World , I'm The Jeel [a.k.a `b14cky`]
   <span class="color1">chillin' ( •̀ ω •́ )✧</span>
 </p>
 
-<iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/4yP0hdKOZPNshxUOjY0cZj?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+<iframe style="border-radius:12px" src="https://open.spotify.com/playlist/3dIGue9XKhiX2NbwWxZhF3?si=l_ChFGI9S0estwuYya_8-g&pi=irLW5fm4R663j" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
