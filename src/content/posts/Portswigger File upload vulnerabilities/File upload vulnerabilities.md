@@ -6,7 +6,7 @@ tags:
   - File-upload-vulnerabilities
   - Burpsuite
   - Caido
-image: images/cover.png
+image: cover.png
 category: PortsWigger Labs Writeups
 draft: false
 ---
