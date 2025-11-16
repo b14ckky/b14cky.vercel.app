@@ -1,6 +1,6 @@
 ---
 title: PortsWigger Clickjacking Labs - November 2025
-published: 2025-11-15
+published: 2025-11-16
 description: Writeup of Clickjacking.
 tags:
   - Clickjacking
