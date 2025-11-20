@@ -36,6 +36,9 @@ importers:
       '@swup/astro':
         specifier: ^1.4.1
         version: 1.4.1(@types/babel__core@7.20.5)
+      '@vercel/speed-insights':
+        specifier: ^1.2.0
+        version: 1.2.0(svelte@4.2.19)
       astro:
         specifier: ^4.16.12
         version: 4.16.13(@types/node@22.8.1)(lightningcss@1.27.0)(rollup@2.79.2)(sass@1.80.4)(stylus@0.63.0)(terser@5.36.0)(typescript@5.6.3)
@@ -1666,6 +1669,29 @@ packages:
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
+
+  '@vercel/speed-insights@1.2.0':
+    resolution: {integrity: sha512-y9GVzrUJ2xmgtQlzFP2KhVRoCglwfRQgjyfY607aU0hh0Un6d0OUyrJkjuAlsV18qR4zfoFPs/BiIj9YDS6Wzw==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
 
   '@volar/kit@2.4.7':
     resolution: {integrity: sha512-x8hr9YwHVl2qV7oNEBgcEe4EE6bP5EzD+cFgccUp0NLU6tVALBNcVA5b1LATDW/36JGRg3VFHDmUbJ1q++JzMg==}
@@ -6495,6 +6521,10 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
+  '@vercel/speed-insights@1.2.0(svelte@4.2.19)':
+    optionalDependencies:
+      svelte: 4.2.19
+
   '@volar/kit@2.4.7(typescript@5.6.3)':
     dependencies:
       '@volar/language-service': 2.4.7
@@ -7547,6 +7577,7 @@ snapshots:
       '@fontsource-variable/jetbrains-mono': 5.1.1
       '@fontsource/roboto': 5.1.0
       '@swup/astro': 1.4.1(@types/babel__core@7.20.5)
+      '@vercel/speed-insights': 1.2.0(svelte@4.2.19)
       astro: 4.16.13(@types/node@22.8.1)(lightningcss@1.27.0)(rollup@2.79.2)(sass@1.80.4)(stylus@0.63.0)(terser@5.36.0)(typescript@5.6.3)
       astro-compress: 2.3.5(@types/node@22.8.1)(rollup@2.79.2)(sass@1.80.4)(stylus@0.63.0)(typescript@5.6.3)
       astro-icon: 1.1.1
@@ -7571,13 +7602,16 @@ snapshots:
       typescript: 5.6.3
       unist-util-visit: 5.0.0
     transitivePeerDependencies:
+      - '@sveltejs/kit'
       - '@types/babel__core'
       - '@types/node'
       - debug
       - less
       - lightningcss
+      - next
       - prettier
       - prettier-plugin-astro
+      - react
       - rollup
       - sass
       - sass-embedded
@@ -7587,6 +7621,8 @@ snapshots:
       - terser
       - ts-node
       - vite
+      - vue
+      - vue-router
 
   generic-names@4.0.0:
     dependencies:
