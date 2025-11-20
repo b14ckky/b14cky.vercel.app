@@ -5,12 +5,12 @@ Hello World, I'm The Jeel [a.k.a. `b14cky`].
 - I am currently pursuing my M.TECH in cyber security from National Forensic Science University (http://nfsu.ac.in/).
 - I Have Completed My B.TECH in CSE From Nirma University (https://technology.nirmauni.ac.in/).
 - I Have Completed My Diploma in CSE From Marwadi University (https://www.marwadiuniversity.ac.in/diploma/computer-engineering/).
-- CTF player for [K4rm4](https://ctftime.org/team/131903)
-- Hack The Box: (https://app.hackthebox.com/users/507787)
-- Try Hack Me: (https://tryhackme.com/p/0xb14cky)
+- CTF player for [K4rm4](https://ctftime.org/team/131903).
+- Hack The Box: (https://app.hackthebox.com/users/507787).
+- Try Hack Me: (https://tryhackme.com/p/0xb14cky).
 - Blue Team Labs Online: (https://blueteamlabs.online/public/user/62dcd6dcba8a768fefe423) 
-- Cyber Defenders: (https://cyberdefenders.org/p/0xb14cky)
-- Crypto Hack: (https://cryptohack.org/user/b14cky/)
+- Cyber Defenders: (https://cyberdefenders.org/p/0xb14cky).
+- Crypto Hack: (https://cryptohack.org/user/b14cky/).
 **ɪ ᴀᴍ ʜᴇʀᴇ ᴛᴏ ꜱʜᴀʀᴇ ᴋɴᴏᴡʟᴇᴅɢᴇ -- ᴀɴᴅ ᴛᴏ ʟᴇᴀʀɴ.**
 
 ### Feel free to reach out to me via
