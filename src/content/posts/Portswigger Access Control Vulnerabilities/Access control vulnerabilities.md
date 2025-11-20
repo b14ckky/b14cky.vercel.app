@@ -453,7 +453,7 @@ You: Ok thanks, bye!
 
 ![Pasted image 20251120164456.png](images/Pasted_image_20251120164456.png)
 
-## Lab 10: URL-based access control can be circumvented# URL-based access control can be circumvented
+## Lab 10: URL-based access control can be circumvented
 
 ![Pasted image 20251120214400.png](images/Pasted_image_20251120214400.png)
 
