@@ -7,7 +7,7 @@ import type {
 import { LinkPreset } from './types/config'
 
 export const siteConfig: SiteConfig = {
-  title: '0xB14cky',
+  title: '0xB14CKY',
   subtitle: '',
   lang: 'en',         // 'en', 'zh_CN', 'zh_TW', 'ja', 'ko'
   themeColor: {
@@ -52,7 +52,7 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
   avatar: 'assets/images/demo-avatar.png',  // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-  name: 'B14CKY',
+  name: '0xB14CKY',
   bio: '𝐇𝟒𝐂𝐊 𝟓𝐥𝟑𝟑𝐏 𝐑𝟑𝐏𝟑𝟒𝟕',
   links: [
     {
