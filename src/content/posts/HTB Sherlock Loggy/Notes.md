@@ -330,7 +330,7 @@ janice:Password123
 
 ## What app did Janice have open the last time she ran the "screenshot app"?
 
-![screenshot_1718068593.png](images/screenshot_1718068593)
+![screenshot_1718068593.png](images/screenshot_1718068593.png)
 
 ```
 Solitaire
