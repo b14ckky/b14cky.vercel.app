@@ -16,7 +16,7 @@ draft: false
 	- Janice from accounting is beside herself! She was contacted by the SOC to tell her that her work credentials were found on the dark web by the threat intel team. We managed to recover some files from her machine and sent them to the our REM analyst.
 - **Category: Malware Analysis**
 - **Difficulty: Easy**
-- File: [Loggy.zip](/uploads/HTB_Sherlock_Loggy/Loggy.zip)
+- File:- [Loggy.zip](/uploads/HTB_Sherlock_Loggy/Loggy.zip)
 
 ![Pasted image 20251208023359.png](images/Pasted_image_20251208023359.png)
 
@@ -330,7 +330,7 @@ janice:Password123
 
 ## What app did Janice have open the last time she ran the "screenshot app"?
 
-![[screenshot_1718068593.png]]
+![screenshot_1718068593.png](images/screenshot_1718068593)
 
 ```
 Solitaire
