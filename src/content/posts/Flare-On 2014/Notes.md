@@ -1,7 +1,7 @@
 ---
 title: Flare-On 2014 Jan 2026
 published: 2026-01-18
-description: Writeup of Flare-On 2014 e .
+description: Writeup of Flare-On 2014.
 tags:
   - Reversing
   - Flare-On
