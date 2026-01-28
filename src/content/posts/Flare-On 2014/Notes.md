@@ -1155,3 +1155,608 @@ wa1ch.d3m.spl01ts@flare-on.com
 ```
 
 ![Pasted image 20260126013350.png](images/Pasted_image_20260126013350.png)
+
+# Challenge 5: 
+
+## Stage 1 Analyzing PE File
+
+### Initial Triage
+
+
+- File Type: 5get_it: PE32 executable for MS Windows 5.01 (DLL), Intel i386, 4 sections
+- Size: 99KB
+- SHA256: 2225b6966b9baae11ee5a8412201b30fd72c4a10e92727d92acf5ea6b5df9176
+
+### Basic Static Analysis
+
+- Just quick VT search,
+	- It gives **48/69** hits so it is malicious and marked `KeyLogger` so maybe some keystroke things will be there,
+
+![Pasted image 20260128002927.png](images/Pasted_image_20260128002927.png)
+
+- Detect it Easy is showing that it is written in `C++` and compiled with Visual Studio (2010).
+	- Also it is not packed because entropy is nomal,
+
+![Pasted image 20260128002704.png](images/Pasted_image_20260128002704.png)
+
+![Pasted image 20260128003244.png](images/Pasted_image_20260128003244.png)
+
+- Now we can analyze this binary with `pestudio` to get more idea,
+- In-fact, it gives lots of info such as,
+	- Our sample is a `32 bit DLL` file with entry point address of `0x0000B186` and size of `101376 Bytes`. 
+	- And this binary compiled in `2014`.
+
+![Pasted image 20260128005416.png](images/Pasted_image_20260128005416.png)
+
+- Now some silly floss things to see any interesting strings, 
+	- it quite big and lots things are there so let's break it down and show you some stuff.
+
+- As i said previously, this are some keystrokes,
+	- And to store them it impersonate the `svchost` a legit process's log file which is `svchost.log`,
+
+```json
+[SHIFT]
+[RETURN]
+[BACKSPACE]
+[TAB]
+[CTRL]
+[DELETE]
+[CAPS LOCK]
+GetAsyncKeyState
+svchost.log
+```
+
+- It is a Keyboard + file write combo
+	- capture keystroke → write to file → flush.
+
+```bash
+GetAsyncKeyState
+WriteFile
+CreateFileA/W
+FlushFileBuffers
+SetFilePointer
+```
+
+- Some registry keys used to do persistence with it's related Windows APIs,
+
+```bash
+SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+RegCloseKey
+RegQueryValueExA
+RegOpenKeyExA
+RegSetValueExA
+RegCreateKeyA
+```
+
+- Something with DLL stuff,
+	- It references `c:\windows\system32\svchost.dll` and `svchost.log` but there is no such file (Windows has `svchost.exe` in that location).
+	- There is also `c:\windows\system32\rundll32.exe c:\windows\system32\svchost.dll` which means this file is most probably a DLL and should be executed like that. 
+	- There are no parameters, so whatever this DLL is doing should be in `DllMain`.
+
+```bash
+c:\windows\system32\svchost.dll
+c:\windows\system32\rundll32.exe c:\windows\system32\svchost.dll
+```
+
+- Windows APIs related to Anti-Analysis Technique,
+
+```bash
+IsDebuggerPresent
+Sleep
+QueryPerformanceCounter
+```
+
+- Finally, FLOSS decoded strings,
+
+```bash
+Courier New
+DDNDNNNNDND
+.
+.
+.
+FLARE ON!
+```
+
+- So only based on these basic analysis, we take overview of malware that how it could behave which helps us in advance analysis.
+### Advance Static Analysis
+
+- Now Buckle down because we jumping into IDA for some low level stuff,
+- As i said previously, there is only one export which is `DLLEntryPoint`,
+- The Windows loader calls the DLL’s entry point defined in the PE Optional Header, which in MSVC-built DLLs is typically `DllMainCRTStartup` (often labeled as `DLLEntryPoint` by IDA).
+- And this `DllMainCRTStartup` will call `DLLMain`. 
+
+```yml
+Here is the flow,
+----------------------
+Windows Loader
+   ↓
+AddressOfEntryPoint
+   ↓
+__DllMainCRTStartup
+   ↓
+DllMain
+----------------------
+
+More Technically it do these process,
+
+ntdll!LdrLoadDll
+    ↓
+ntdll!LdrpCallInitRoutine
+    ↓
+PE.OptionalHeader.AddressOfEntryPoint
+    ↓
+__DllMainCRTStartup   ← CRT
+    ↓
+DllMain               ← user code
+
+```
+
+- Here is the crux explanation, 
+	- When a DLL is loaded, `ntdll!LdrLoadDll` maps it into memory, `LdrpCallInitRoutine` decides initialization, the loader jumps to the PE’s `AddressOfEntryPoint` (usually `__DllMainCRTStartup`), which initializes the C runtime (TLS, heap, SEH, globals) and finally calls the user-defined `DllMain` under the loader lock.
+
+![Pasted image 20260128010732.png](images/Pasted_image_20260128010732.png)
+
+- Here is the `DLLMain` Called,
+
+![Pasted image 20260128012223.png](images/Pasted_image_20260128012223.png)
+
+- Now this `DLLMain` is calling other bunch of other functions, 
+- Here is function tree,
+	- sub_1000A570() - Doing Persistence by adding key in Registry
+	- sub_1000A610() - Checking the Key already present of not
+	- sub_1000AD77() - nothing important..
+	- sub_1000A4C0() - Just adding some noise to delay the process 
+		- sub_10009EB0 - Switch Case with all ASCII Chars
+			- sub_10009AF0() - Case of Char 'M'
+				- sub_10009AF0() - Hidden Function
+		- sub_10001000
+
+![Pasted image 20260128013233.png](images/Pasted_image_20260128013233.png)
+
+#### `sub_1000A570` function,
+
+- First i analyzed the `sub_1000A570` function,
+
+![Pasted image 20260128013550.png](images/Pasted_image_20260128013550.png)
+
+- Inside the function we encounter [RegOpenKeyEx](http://msdn.microsoft.com/en-us/library/windows/desktop/ms724897%28v=vs.85%29.aspx) that opens a registry key. 
+- Full registry key is a combination of `hKey` and `lpSubKey`. `hKey` can be one of the [predefined keys](http://msdn.microsoft.com/en-us/library/windows/desktop/ms724836%28v=vs.85%29.aspx). 
+- The constants for the predefined keys needed a bit of googling because the MSDN page didn't list them. Here they are:  
+
+```bash
+| Key                 | Constant |
+|---------------------|----------|
+| HKEY_CLASSES_ROOT   |    0     |
+| HKEY_CURRENT_USER   |    1     |
+| HKEY_LOCAL_MACHINE  |    2     |
+| HKEY_USERS          |    3     |
+| HKEY_CURRENT_CONFIG |    5     |
+```
+
+```cpp
+v3 = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0, 1u, &phkResult);
+```
+
+- Here is the arguments and if we map with MSDN function then it looks like this,
+
+```c
+LSTATUS RegOpenKeyExA(
+  [in]           HKEY   hKey,        // HKEY_LOCAL_MACHINE (0x80000002)
+  [in, optional] LPCSTR lpSubKey,     // "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+  [in]           DWORD  ulOptions,    // 0
+  [in]           REGSAM samDesired,   // KEY_QUERY_VALUE (0x0001)
+  [out]          PHKEY  phkResult     // &phkResult
+);
+
+```
+
+- So if we move further,
+- If function succeeds it will return `ERROR_SUCCESS` which is 0 according to [this page](http://msdn.microsoft.com/en-us/library/windows/desktop/ms681382%28v=vs.85%29.aspx), otherwise it will return another error code. 
+- `db 'SOFTWARE\Microsoft\Windows\CurrentVersion\Run',0` in `.rdata` section.
+- The binary will check if it has access to registry at that path. 
+- If so then the return value (in eax) will be 0 and it will jump right (JZ will succeed).
+
+![Pasted image 20260128015409.png](images/Pasted_image_20260128015409.png)
+
+```c
+v3 = RegQueryValueExA(phkResult, "svchost", 0, 0, Data, &cbData);
+```
+
+- Here is the arguments and if we map with MSDN function then it looks like this,
+
+```c
+LSTATUS RegQueryValueExA(
+  [in]                HKEY    hKey,        // phkResult
+  [in, optional]      LPCSTR  lpValueName, // "svchost"
+                      LPDWORD lpReserved,  // 0
+  [out, optional]     LPDWORD lpType,      // 0
+  [out, optional]     LPBYTE  lpData,      // Data
+  [in, out, optional] LPDWORD lpcbData     // &cbData
+);
+```
+
+- [RegQueryValueEx](http://msdn.microsoft.com/en-us/library/windows/desktop/ms724911%28v=vs.85%29.aspx) checks if there is a registry key at an open path. 
+- It is looking for a registry key named `svchost` at that path. If such key exists, function will return 0.
+- In this case, it returned 2 which stands for `ERROR_FILE_NOT_FOUND` meaning there was no such key. 
+- Then it will call [RegCloseKey](http://msdn.microsoft.com/en-us/library/windows/desktop/ms724837%28v=vs.85%29.aspx) and closes the open registry path. This function's return value is saved in `var_110` (we will need it later):
+
+```bash
+|           Condition          |         Return Value          |
+|------------------------------|-------------------------------|
+|Registry key cannot be opened |               1               |
+|Registry key does not exist   |               2               |
+|Registry key exists           | 1000A6BB or DllMain(x,x,x)+3B |
+```
+
+- This DLL is **self-installing malware** that checks whether it already has persistence, installed itself if not, disguises itself as `svchost`, registers itself to run at every system startup via the Windows Run registry key, executes itself using `rundll32`, hides its console, and then enters an infinite loop performing its main malicious activity.
+- Now it calls `sub_1000A610`,
+
+#### `sub_1000A610` function,
+
+- Now this `sub_1000A610` similar as previous and here is pseudocode, 
+
+```c
+int __cdecl sub_1000A610(BYTE *lpData)
+{
+  size_t v1; // eax
+  HKEY phkResult[2]; // [esp+4h] [ebp-8h] BYREF
+
+  if ( RegCreateKeyA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", phkResult) )
+    return 1;
+  v1 = strlen((const char *)lpData);
+  RegSetValueExA(phkResult[0], "svchost", 0, 1u, lpData, v1);
+  phkResult[1] = 0;
+  return 0;
+}
+```
+
+![Pasted image 20260128020153.png](images/Pasted_image_20260128020153.png)
+
+- We see that it is calling `GetModuleHandleEx` for `sub_1000A610` and checks the return value .
+- The return value for [GetModuleHandleEx](http://msdn.microsoft.com/en-us/library/windows/desktop/ms683200%28v=vs.85%29.aspx) will be non-zero, otherwise it will be zero. If call was not successful then last error will be printed to file.
+
+![Pasted image 20260128020523.png](images/Pasted_image_20260128020523.png)
+
+![Pasted image 20260128020624.png](images/Pasted_image_20260128020624.png)
+
+- If `GetModuleHandleEx` was successful it will land here. 
+- [GetModuleFileName](http://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx) is called which will return the full path for the specified module in `hModule`. 
+- In this case, the binary retrieves its own path and saves it in `[ebp+Filename]`.in return value of `sub_1000A570` is compared with 2.
+- If registry key did not exist, we will continue.
+- We have already seen the strings being loaded. 
+- Then `CopyFileA` is called to copy itself to `c:\\windows\\system32\\svchost.dll`.
+- It `c:\windows\system32\rundll32.exe c:\windows\system32\svchost.dll` to the stack and calls `sub_1000A610` .
+- Based on this string and checking for existence of the registry key we can guess what is going to happen in this function.
+- Inside this function we see that [RegCreateKey](http://msdn.microsoft.com/en-us/library/windows/desktop/ms724842%28v=vs.85%29.aspx) to open `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`. If the key does not exist, it will create it.
+- If call was successful, execution continues. 
+- It is adding a new registry key named `svchost` to that path with the specified value. Then function will return with the result value of `RegSetValueEx`. 
+- If it was successful, it will be 0.
+<br>
+- **The Dll copied itself to system32 and it will run every time Windows starts**.
+
+#### `sub_1000A4C0` Function
+
+- Runs forever and repeatedly performs random‑count tasks using data returned by another function, with artificial delays and memory allocation used **mainly for noise / evasion**.
+- In short just not usefull.
+
+```c
+void __noreturn sub_1000A4C0()
+{
+  char *Buffer; // [esp+0h] [ebp-14h]
+  int v1; // [esp+4h] [ebp-10h]
+  void *v2; // [esp+8h] [ebp-Ch]
+  __int16 v3; // [esp+Ch] [ebp-8h]
+
+  while ( 1 )
+  {
+    v1 = rand() % 200 + 50;
+    v2 = malloc(15 * v1);
+    memset(v2, 0, 15 * v1);
+    Sleep(0xAu);
+    v3 = 0;
+    while ( v3 < v1 )
+    {
+      Sleep(0xAu);
+      Buffer = (char *)sub_10009EB0();
+      if ( Buffer )
+      {
+        sub_10001000(Buffer);
+        ++v3;
+      }
+    }
+  }
+}
+```
+
+##### `sub_10009EB0` function,
+
+
+![Pasted image 20260128021925.png](images/Pasted_image_20260128021925.png)
+
+- This loop is **Scanning all keyboard keys to detect which key is pressed.**
+- Loops through all virtual key codes from 8 to 222 and stops when it finds which key the user pressed.
+- A classic keylogger polling logic.
+- Here is mapping table of keystrokes and value,
+
+```c
+SHORT GetAsyncKeyState(
+  [in] int vKey // The virtual-key code
+);
+```
+
+| VK (Virtual key codes) | Value   |
+| ---------------------- | ------- |
+| VK_BACK                | 8       |
+| VK_TAB                 | 9       |
+| VK_RETURN              | 13      |
+| VK_SHIFT               | 16      |
+| VK_CONTROL             | 17      |
+| VK_MENU (Alt)          | 18      |
+| VK_ESCAPE              | 27      |
+| 'A' - 'Z' or 'a' - 'z' | 65–90   |
+| F1–F12                 | 112–123 |
+
+```c
+for ( i = 8; ; ++i )
+{
+	if ( i > 222 )
+	  return 0;
+	if ( GetAsyncKeyState(i) == 0xFFFF8001 )
+	  break;
+	  .
+	  .
+	  .
+```
+
+- After getting that pressed key, we just pass it to switch case which will further call some functions,
+- And those functions are nothing but just a wrapper which return same character,
+
+![Pasted image 20260128022927.png](images/Pasted_image_20260128022927.png)
+
+![Pasted image 20260128023043.png](images/Pasted_image_20260128023043.png)
+
+- if given input is NOT a normal character then it goes to 2nd switch case,
+
+![Pasted image 20260128023400.png](images/Pasted_image_20260128023400.png)
+
+```c
+v1 = i - 8;
+switch (i)
+{
+	case 8:
+	....
+	case 190:
+}
+```
+
+- Final crux of this function, 
+- And one importent thing,
+	- This function is a **keystroke dispatcher**, not a string collector.
+	- It means this whole process happens for one char only and function return and execution goes to next function which is `sub_10001000(Buffer);`, 
+
+```yml
+wait until user presses a key
+
+if key is a letter/number/symbol:
+    return that character
+else if key is Enter / Backspace / Space / Shift:
+    handle that action
+else:
+    ignore and keep waiting
+```
+
+##### `sub_10001000` function
+
+- Writes the received character into a file called `svchost.log`.
+- And this whole process happens with that `sub_1000A4C0` function sleep time or just delay to make it stealth.
+
+```c
+int __cdecl sub_10001000(char *Buffer)
+{
+  FILE *Stream; // [esp+0h] [ebp-4h]
+
+  for ( Stream = 0; !Stream; Stream = fopen("svchost.log", "a+") )
+    Sleep(0xAu);
+  fputs(Buffer, Stream);
+  fclose(Stream);
+  return 1;
+}
+```
+
+- Now what about flag,
+- Here is some puzzle thing, 
+	- This function is for char 'M' and it has hidden logic,
+	- `sub_10001240` hidden function
+
+![Pasted image 20260128234520.png](images/Pasted_image_20260128234520.png)
+
+![Pasted image 20260128234632.png](images/Pasted_image_20260128234632.png)
+
+```c
+const char *sub_10009AF0()
+{
+  if ( dword_100194FC > 0 )
+  {
+    _cfltcvt_init();
+    sub_10001240();
+  }
+  return "m";
+}
+```
+
+- now this `sub_10001240()` is just printing banner with some cools ascii art,
+
+```c
+INT_PTR sub_10001240()
+{
+  HINSTANCE WindowLongA; // [esp+0h] [ebp-1590h]
+  wchar_t v2[12]; // [esp+4h] [ebp-158Ch] BYREF
+  HWND hWnd; // [esp+1Ch] [ebp-1574h]
+  wchar_t v4[2728]; // [esp+20h] [ebp-1570h] BYREF
+  LPARAM dwInitParam; // [esp+1570h] [ebp-20h]
+  HINSTANCE hInstance; // [esp+1574h] [ebp-1Ch]
+  wchar_t Source[10]; // [esp+1578h] [ebp-18h] BYREF
+
+  hWnd = 0;
+  dwInitParam = 0;
+  wcscpy(v2, L"Courier New");
+  wcscpy(Source, L"FLARE ON!");
+  wcscpy(
+    v4,
+    L"_______________________________________________NDD__________________________________________________\n"
+     "______________________________________________DDDDD_________________________________________________\n"
+     "______________________________________________DDDDDN________________________________________________\n"
+     "_____________________________________________DDDDDDD________________________________________________\n"
+     "NNNNNNNNDDN________DNNN_____________________NDDDDDDDD_______________NNNNNNNNDN__________DNNNNNNNNNNN\n"
+     "DDDDDDDDDDD________NDDD____________________NDDDDDDDDDN______________DDDDDDDDDDDD________DDDDDDDDDDDD\n"
+     "DDDDDDDDDDD________NDDD____________________NDDDDDDDDDD______________DDDDDDDDDDDDN_______NDDDDDDDDDDD\n"
+     "DDDD_______________DDDD___________________NDDDDDDDDDDDD_____________DDDD_____NDDD_______DDDD________\n"
+     "DDDD_______________DDDD__________________DDDDDDD_DDDDDDN____________DDDD_____DDDD_______DDDD________\n"
+     "DDDDDDDDDD_________DDDD__________________NDDDDD___DDDDDDN___________DDDDDNNNNDDDN_______DDDDDDDDDD__\n"
+     "DDDDDDDDDD_________DDDD_________________DDDDDDN___DNDDDDD___________DDDDDDDDDDD_________DDDDDDDDDD__\n"
+     "DDDD_______________DDDD________________DDDDDDD_____DDDDDDD__________DDDD__DDDD__________DDDD________\n"
+     "DDDD_______________DDDD_______________DDDDDDD_______DDDDDDD_________DDDD__NNDDD_________DDDD________\n"
+     "DDDD_______________DDDDNNNNNN_________NDDDDDN_______NDDDDDD_________DDDD___DDDDN________DDDDNNNNNNNN\n"
+     "DDDD_______________DDDDDDDDDDD_______NDDDDDD_________NDDDDDD________DDDD____DDDD________DDDDDDDDDDDD\n"
+     "DDDN_______________DDDDDDDDDDN______NDDDDDDDDDDDDDDD__DDDDDDD_______NDDD_____DDDD_______DDDDDDDDDDDN\n"
+     "____________________________________DDDDDDDDDDDDDDDN___DDDDDDN______________________________________\n"
+     "___________________________________DDDDDDDDDDDDDDD_____DDDDDDD______________________________________\n"
+     "__________________________________DDDDDDDDDDDDDDN_______DDDDDDD_____________________________________\n"
+     "________________________________________NDDDDDN_____________________________________________________\n"
+     "_______________________________________DNDDDDN______________________________________________________\n"
+     "_______________________________________DDDDD________________________________________________________\n"
+     "______________________________________DDDDD_________________________________________________________\n"
+     "_____________________________________DDDDD__________________________________________________________\n"
+     "_____________________________________NDD____________________________________________________________\n"
+     "____________________________________NDD_____________________________________________________________\n"
+     "___________________________________DD_______________________________________________________________\n");
+  wcscpy(&Destination, Source);
+  wcscpy(&word_10017034, v2);
+  wcscpy(&word_10017062, v4);
+  if ( hWnd )
+    WindowLongA = (HINSTANCE)GetWindowLongA(hWnd, -6);
+  else
+    WindowLongA = GetModuleHandleA(0);
+  hInstance = WindowLongA;
+  return DialogBoxIndirectParamW(WindowLongA, &hDialogTemplate, hWnd, DialogFunc, dwInitParam);
+}
+```
+
+- But again it doesn't have flag so i looks up little bit and here is what i understand,
+	- This program **pretends to be a keylogger**, but it is actually a **flag puzzle**.
+	- There is **NO place** where the flag exists as a string.
+	- The flag is **never stored**.
+	- The flag is **never assembled**.
+	- The flag exists **only as logic**.
+- Under the hood:
+	- Each key has its **own function**
+	- Each function returns **one small string**
+    - `"a"`
+    - `"m"`
+    - `"dot"`
+    - `"at"`
+- Some functions also **set hidden memory flags**
+- Those memory flags are the **real secret**.
+- Here are those variables,
+
+![Pasted image 20260128235204.png](images/Pasted_image_20260128235204.png)
+
+
+- THE TRICK
+	- You are NOT supposed to type the flag.
+	- Typing is a decoy.
+- The real flag is determined by:
+	- which functions set those dword flags
+	- and the order of those flags
+- **I know it looks weird and tricky, but I also find it very difficult, so this is my understanding.** 
+- So to do this i referred one python script by [xbyte](https://www.xbyte.mx/posts/flareon2014_-_challenge05/), so credit goes to him.
+- Here is the script,
+
+```py
+#!/usr/bin/env python3
+
+import r2pipe
+import os
+
+keys = [
+    "0x10017000","0x10019460","0x10019464","0x10019468","0x1001946c",
+    "0x10019470","0x10019474","0x10019478","0x1001947c","0x10019480",
+    "0x10019484","0x10019488","0x1001948c","0x10019490","0x10019494",
+    "0x10019498","0x1001949c","0x100194a0","0x100194a4","0x100194a8",
+    "0x100194ac","0x100194b0","0x100194b4","0x100194b8","0x100194bc",
+    "0x100194c0","0x100194c4","0x100194c8","0x100194cc","0x100194d0",
+    "0x100194d4","0x100194d8","0x100194dc","0x100194e0","0x100194e4",
+    "0x100194e8","0x100194ec","0x100194f0","0x100194f4","0x100194f8",
+    "0x100194fc","0x10019500"
+]
+
+flag = ""
+
+if os.path.isfile("5get_it.dll"):
+
+    r2 = r2pipe.open("5get_it.dll")
+    r2.cmd("aaaa")
+
+    for key in keys:
+        xrefs = r2.cmdj("axtj " + key)
+        if not xrefs:
+            continue
+
+        for xref in xrefs:
+            if xref.get("opcode") == f"mov dword [{key}], 1":
+
+                fcn_called = r2.cmdj("pdfj@" + xref["fcn_name"])
+                if not fcn_called:
+                    continue
+
+                for op in fcn_called.get("ops", []):
+                    dis = op.get("disasm", "")
+                    if "mov eax, 0x100" in dis:
+                        addr = dis.split(",")[1].strip()
+                        ch = r2.cmd(f"pr 1 @ {addr}")
+                        flag += ch.strip()
+
+    r2.quit()
+
+replacements = {
+    "dot": ".",
+    "dash": "-",
+    "at": "@"
+}
+
+for k, v in replacements.items():
+    flag = flag.replace(k, v)
+
+print(flag)
+
+```
+
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ python flag.py
+WARN: Relocs has not been applied. Please use `-e bin.relocs.apply=true` or `-e bin.cache=true` next time
+INFO: Analyze all flags starting with sym. and entry0 (aa)
+INFO: Analyze imports (af@@@i)
+INFO: Analyze entrypoint (af@ entry0)
+INFO: Analyze symbols (af@@@s)
+INFO: Analyze all functions arguments/locals (afva@@@F)
+INFO: Analyze function calls (aac)
+INFO: Analyze len bytes of instructions for references (aar)
+INFO: Finding and parsing C++ vtables (avrr)
+INFO: Analyzing methods (af @@ method.*)
+INFO: Recovering local variables (afva@@@F)
+INFO: Type matching analysis for all functions (aaft)
+INFO: Propagate noreturn information (aanr)
+INFO: Scanning for strings constructed in code (/azs)
+INFO: Finding function preludes (aap)
+INFO: Enable anal.types.constraint for experimental type propagation
+l0gging.ur.5tr0ke5@flare-on.co
+```
+
+- Here is the falg,
+
+```yml
+l0gging.ur.5tr0ke5@flare-on.co
+```
