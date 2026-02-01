@@ -1760,3 +1760,1184 @@ l0gging.ur.5tr0ke5@flare-on.co
 ```yml
 l0gging.ur.5tr0ke5@flare-on.co
 ```
+# Challenge 6: 
+## Stage 1 ELF Analysis 
+
+### Initial Triage
+
+- File Type: e7bc5d2c0cf4480348f5504196561297: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, for GNU/Linux 2.6.24, BuildID\[sha1\]=c65164a247cb0c44cab89c0fc06980bf6c082011, stripped
+- Size: 1.16 MB
+- SHA256: 3487e1de75bcb6f2c1425ca4f9b5da8fb66387343bf4a217c5a5cf93c79f0d9d
+### Basic Static Analysis
+
+- Just quick VT search,
+	- It gives **0/69** hits so it is very weird so we will do some analysis on it,
+
+![Pasted image 20260129104603.png](images/Pasted_image_20260129104603.png)
+
+- Detect it Easy (Die) show that this file is written in C language and compiled using GCC in ubuntu system which means it is elf binary.
+- It is stripped binary so symbol was be removed so it might be difficult to analyze easily.
+
+![Pasted image 20260129104631.png](images/Pasted_image_20260129104631.png)
+
+- It seems not packed so we don't need to do heavy unpacking stuff,
+
+![Pasted image 20260129105324.png](images/Pasted_image_20260129105324.png)
+
+- For better analysis i switched to `remnux` which is linux based malware analysis lab to doing some work on elf and linux executables.
+- I used `readelf` tool to get some info about binary and here it is,
+
+```bash
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ readelf -h e7bc5d2c0cf4480348f5504196561297 
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x401058
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          1219080 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         6
+  Size of section headers:           64 (bytes)
+  Number of section headers:         31
+  Section header string table index: 30
+```
+
+- Here is silly `floss` strings which might be worth to look,
+- It is not that much interesting but there are some strings which looks like cpp code ad some linux commands maybe used in this binary.
+- there is some interesting strings which is,
+
+```bash
+/index.html Nosebleed # Heartbleed eh? :) ../nptl/sysdeps/unix/sysv/linux/x86_64/../fork.c info[20]->d_un.d_val == 7
+```
+
+```bash
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ floss e7bc5d2c0cf4480348f5504196561297 --format sc64 | less > floss_strings.txt
+
+INFO: floss: extracting static strings
+finding decoding function features: 100%|██████████████████████| 1/1 [00:00<00:00, 453.63 functions/s, skipped 0 library functions]
+INFO: floss.stackstrings: extracting stackstrings from 1 functions
+extracting stackstrings: 100%|███████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 39.67 functions/s]
+INFO: floss.tightstrings: extracting tightstrings from 0 functions...
+extracting tightstrings: 0 functions [00:00, ? functions/s]
+INFO: floss.string_decoder: decoding strings
+decoding strings: 100%|█████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 168.85 functions/s]
+INFO: floss: finished execution after 10.94 seconds
+INFO: floss: rendering results
+
+FLARE FLOSS RESULTS (version v3.1.1-0-g3cd3ee6)
+
++------------------------+------------------------------------------------------------------------------------+
+| file path              | e7bc5d2c0cf4480348f5504196561297                                                   |
+| identified language    | unknown                                                                            |
+| extracted strings      |                                                                                    |
+|  static strings        | 6094 (53770 characters)                                                            |
+|   language strings     |    0 (    0 characters)                                                            |
+|  stack strings         | 0                                                                                  |
+|  tight strings         | 0                                                                                  |
+|  decoded strings       | 0                                                                                  |
++------------------------+------------------------------------------------------------------------------------+
+
+
+ ───────────────────────────── 
+  FLOSS STATIC STRINGS (6094)  
+ ───────────────────────────── 
+
++------------------------------------+
+| FLOSS STATIC STRINGS: ASCII (6094) |
++------------------------------------+
+
+H9\$(t
+.
+.
+.
+Logrhythm
+Rails
+userdel
+install
+which
+more
+Juniper
+touch
+wait
+unexpand
+7zip
+0cool
+apropos
+IMAP
+jobs
+VeriSign
+==:)
+BIOS
+Heartbleed
+.
+.
+.
+comm
+rsync
+tail
+timeout
+BBBBBBBBB@BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB>BBB?456789:;<=BBBABBB
+BBBBBB
+ !"#$%&'()*+,-./0123BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBFATAL: kernel too old
+/dev/urandom
+FATAL: cannot determine kernel version
+/dev/full
+/dev/null
+cannot set %fs base address for thread-local storage
+unexpected reloc type in static binary
+cxa_atexit.c
+l != ((void *)0)
+__new_exitfn
+LIBC_FATAL_STDERR_
+/dev/tty
+======= Backtrace: =========
+======= Memory map: ========
+/proc/self/maps
+<heap nr="%d">
+<sizes>
+</heap>
+malloc.c
+((p)->size & 0x2)
+(p->prev_size == offset)
+<unknown>
+malloc: top chunk is corrupt
+corrupted double-linked list
+TOP_PAD_
+PERTURB_
+MMAP_MAX_
+ARENA_MAX
+ARENA_TEST
+TRIM_THRESHOLD_
+MMAP_THRESHOLD_
+free(): invalid pointer
+invalid fastbin entry (free)
+free(): invalid size
+heap->ar_ptr == av
+arena.c
+p->size == (0|0x1)
+locked
+malloc(): memory corruption
+(bck->bk->size & 0x4) == 0
+(fwd->size & 0x4) == 0
+bit != 0
+correction >= 0
+realloc(): invalid old size
+realloc(): invalid next size
+!((oldp)->size & 0x2)
+ncopies >= 3
+realloc(): invalid pointer
+hooks.c
+ms->av[2*i+3] == 0
+nclears >= 3
+Arena %d:
+system bytes     = %10u
+in use bytes     = %10u
+Total (incl. mmap):
+max mmap regions = %10u
+max mmap bytes   = %10lu
+<malloc version="1">
+_int_memalign
+_int_malloc
+sYSMALLOc
+munmap_chunk
+_int_free
+heap_trim
+mremap_chunk
+_int_realloc
+__libc_malloc
+__libc_realloc
+__libc_valloc
+__libc_pvalloc
+__libc_calloc
+.
+.
+.
+<total type="fast" count="%zu" size="%zu"/>
+<total type="rest" count="%zu" size="%zu"/>
+<system type="current" size="%zu"/>
+<system type="max" size="%zu"/>
+<aspace type="total" size="%zu"/>
+<aspace type="mprotect" size="%zu"/>
+</malloc>
+malloc_consolidate
+__malloc_set_state
+__libc_memalign
+../sysdeps/x86_64/multiarch/../cacheinfo.c
+! "cannot happen"
+offset == 2
+.
+.
+.
+.
+.
+.
+xdg-open
+GCC: (Ubuntu/Linaro 4.6.3-1ubuntu5) 4.6.3
+.shstrtab
+.note.ABI-tag
+.note.gnu.build-id
+.rela.plt
+.init
+.text
+__libc_freeres_fn
+__libc_thread_freeres_fn
+.fini
+.rodata
+__libc_atexit
+__libc_subfreeres
+__libc_thread_subfreeres
+.eh_frame
+.gcc_except_table
+.tdata
+.tbss
+.init_array
+.fini_array
+.ctors
+.dtors
+.jcr
+.data.rel.ro
+.got
+.got.plt
+.data
+.bss
+__libc_freeres_ptrs
+.comment
+
+
++------------------------------------+
+| FLOSS STATIC STRINGS: UTF-16LE (0) |
++------------------------------------+
+
+
+
+ ───────────────────────── 
+  FLOSS STACK STRINGS (0)  
+ ───────────────────────── 
+
+
+
+ ───────────────────────── 
+  FLOSS TIGHT STRINGS (0)  
+ ───────────────────────── 
+
+
+
+ ─────────────────────────── 
+  FLOSS DECODED STRINGS (0)  
+ ─────────────────────────── 
+```
+
+- Now we we jump into some disassembly stuff 
+
+### Basic Dynamic Analysis
+
+- `ltrace` traces **library function calls**, like 
+	- printf
+	- strcmp
+	- malloc
+	- fopen
+    - puts
+    - exit etc..
+
+```bash
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ ltrace ./e7bc5d2c0cf4480348f5504196561297
+Couldn't find .dynsym or .dynstr in "/proc/2152/exe"
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ no
+
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ ltrace ./e7bc5d2c0cf4480348f5504196561297 arg1
+Couldn't find .dynsym or .dynstr in "/proc/2154/exe"
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ na
+
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ ltrace ./e7bc5d2c0cf4480348f5504196561297 arg1 agr2
+Couldn't find .dynsym or .dynstr in "/proc/2156/exe"
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ bad
+
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ ltrace ./e7bc5d2c0cf4480348f5504196561297 arg1 agr2 arg3
+Couldn't find .dynsym or .dynstr in "/proc/2160/exe"
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ stahp
+ltrace ./e7bc5d2c0cf4480348f5504196561297 arg1 agr2 arg3 agr4
+Couldn't find .dynsym or .dynstr in "/proc/2162/exe"
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ stahp
+```
+
+- `strace` shows how a program talks to the Linux kernel.
+- The binary initializes normally, performs minimal environment setup, does not receive required arguments, immediately fails its internal validation logic, prints `"no"`, and exits with a fixed failure code. 
+- No user-controlled input is processed at all meaning the program expects **specific arguments**, and if they are not present or not correct, it terminates instantly.
+
+```bash
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ strace ./e7bc5d2c0cf4480348f5504196561297
+execve("./e7bc5d2c0cf4480348f5504196561297", ["./e7bc5d2c0cf4480348f55041965612"...], 0x7ffd6d797520 /* 49 vars */) = 0
+uname({sysname="Linux", nodename="remnux", ...}) = 0
+brk(NULL)                               = 0x3fde1000
+brk(0x3fde21c0)                         = 0x3fde21c0
+arch_prctl(ARCH_SET_FS, 0x3fde1880)     = 0
+brk(0x3fe031c0)                         = 0x3fe031c0
+brk(0x3fe04000)                         = 0x3fe04000
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0), ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f74a9d75000
+write(1, "no\n", 3no
+)                     = 3
+exit_group(52)                          = ?
++++ exited with 52 +++
+```
+
+```bash
+# Running Strace with 2 arguments
+remnux@remnux:~/Documents/Flare-on/2014/Chall5$ strace ./e7bc5d2c0cf4480348f5504196561297 arg1 arg2
+execve("./e7bc5d2c0cf4480348f5504196561297", ["./e7bc5d2c0cf4480348f55041965612"..., "arg1", "arg2"], 0x7ffdb7a46ad0 /* 49 vars */) = 0
+uname({sysname="Linux", nodename="remnux", ...}) = 0
+brk(NULL)                               = 0x7018000
+brk(0x70191c0)                          = 0x70191c0
+arch_prctl(ARCH_SET_FS, 0x7018880)      = 0
+brk(0x703a1c0)                          = 0x703a1c0
+brk(0x703b000)                          = 0x703b000
+ptrace(PTRACE_TRACEME)                  = -1 EPERM (Operation not permitted)
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0), ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fb585c32000
+write(1, "Program received signal SIGSEGV,"..., 52Program received signal SIGSEGV, Segmentation fault
+) = 52
+exit_group(9001)                        = ?
++++ exited with 41 +++
+```
+
+- This is simplest anti-debugging technique in Linux, simply,
+	- https://reverseengineering.stackexchange.com/questions/1930/detecting-tracing-in-linux/1931#1931
+- Here is the linux `syscall` table, https://web.archive.org/web/20201218060355/http://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/.
+
+```bash
+if (ptrac(PTRACE_TRACEME, 0, 1, 0) == -1) BeingDebugged = true;
+```
+### Advance Static Analysis
+
+- Here is the reference of `sys_ptrace` in `sub_4742B0` function, so rename with `mw_syscall_anti_debug_ptrace` 
+- The `ptrace` system call (`sys_ptrace`) in Linux is used by a tracer process to monitor and control a trace process, generally returning `0` on success or `-1` on error.
+
+![Pasted image 20260201142232.png](images/Pasted_image_20260201142232.png)
+
+- this `mw_anti_debug_ptrace` is referenced in another function which is checking the return value and if it is -1 which means failed then it will crash and return `Segmentation Fault` so we have to patch that by replacing `74 (jz)` conditional jump with  `EB (jmp)` unconditional jump.  
+- I used this as reference,
+	- https://c9x.me/x86/html/file_module_x86_id_147.html
+
+
+![Pasted image 20260201144857.png](images/Pasted_image_20260201144857.png)
+
+```c
+    if ( (mw_anti_debug_ptrace(0, 0, 1u, 0) & 0x8000000000000000LL) != 0LL )
+    {
+      sub_45EBE0((__int64)"Program received signal SIGSEGV, Segmentation fault");
+      sub_45E790(9001);
+    }
+```
+
+#### Patch 1: ptrace patching
+
+- So to patch that
+- I need to first get opcodes to identify the hex sequence so to do that i used ida's patch feature and get the sequence of opcodes,
+
+```
+74 14 BF 50 3B 4F 00 E8 B8 F9 03 00 BF 29 23 00
+```
+
+![Pasted image 20260201150209.png](images/Pasted_image_20260201150209.png)
+
+- I can use HxD, to change `74` to `EB`,
+
+![Pasted image 20260201150931.png](images/Pasted_image_20260201150931.png)
+
+- After that, i open it in ida and as you can see that it is taking unconditional jump with any condition so the patch worked perfectly.  
+
+![Pasted image 20260201151221.png](images/Pasted_image_20260201151221.png)
+
+- Now this command no longer given seg fault,
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ strace -i ./e7bc5d2c0cf4480348f5504196561297.patched arg1 arg2
+
+[00007add30ede557] execve("./e7bc5d2c0cf4480348f5504196561297.patched", ["./e7bc5d2c0cf4480348f55041965612"..., "arg1", "arg2"], 0x7fff3abb55b8 /* 35 vars */) = 0
+[00000000004a9297] uname({sysname="Linux", nodename="DESKTOP-VRSQRAJ", ...}) = 0
+[00000000004aa78a] brk(NULL)            = 0x27391000
+[00000000004aa78a] brk(0x273921c0)      = 0x273921c0
+[000000000045e3f5] arch_prctl(ARCH_SET_FS, 0x27391880) = 0
+[00000000004aa78a] brk(0x273b31c0)      = 0x273b31c0
+[00000000004aa78a] brk(0x273b4000)      = 0x273b4000
+[000000000047431b] ptrace(PTRACE_TRACEME) = -1 EPERM (Operation not permitted)
+[0000000000473e44] fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0), ...}) = 0
+[000000000047509a] mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x778d0840d000
+[0000000000473f50] write(1, "bad\n", 4bad
+) = 4
+[0000000000473dd8] exit_group(420)      = ?
+[????????????????] +++ exited with 164 +++
+```
+
+- Now lets analyze the `sub_435E20` which has `bad` string so i renamed it as `mw_bad_str` and by doing some digging i can see that it is checking that argument length is 10 or not.
+
+![Pasted image 20260201152007.png](images/Pasted_image_20260201152007.png)
+
+- By analyzing further we understand that the string "bngcg\`debd" is XOR'ed with `0x56` to obtain the value of the 1st argument.
+
+![Pasted image 20260201153736.png](images/Pasted_image_20260201153736.png)
+
+- By doing XOR i get this value `4815162342`, which is exactly 10 digit long so i passed this as argument in patched program,
+
+![Pasted image 20260201152747.png](images/Pasted_image_20260201152747.png)
+
+- We can see a `nanosleep` at offset `0x473d50`. 
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ strace -i ./e7bc5d2c0cf4480348f5504196561297.patched 4815162342 arg2
+
+[00007f2fa72de557] execve("./e7bc5d2c0cf4480348f5504196561297.patched", ["./e7bc5d2c0cf4480348f55041965612"..., "4815162342", "arg2"], 0x7ffcc1afea98 /* 35 vars */) = 0
+[00000000004a9297] uname({sysname="Linux", nodename="DESKTOP-VRSQRAJ", ...}) = 0
+[00000000004aa78a] brk(NULL)            = 0x2c36a000
+[00000000004aa78a] brk(0x2c36b1c0)      = 0x2c36b1c0
+[000000000045e3f5] arch_prctl(ARCH_SET_FS, 0x2c36a880) = 0
+[00000000004aa78a] brk(0x2c38c1c0)      = 0x2c38c1c0
+[00000000004aa78a] brk(0x2c38d000)      = 0x2c38d000
+[000000000047431b] ptrace(PTRACE_TRACEME) = -1 EPERM (Operation not permitted)
+[000000000047c9c0] rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+[000000000047c882] rt_sigaction(SIGCHLD, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+[0000000000473d50] nanosleep({tv_sec=3600, tv_nsec=0}, ^C{tv_sec=3581, tv_nsec=387430080}) = ? ERESTART_RESTARTBLOCK (Interrupted by signal)
+```
+
+- `nanosleep(3600 seconds);` which is 1 hour, 
+- it is used for
+	- Waste analyst time
+	- Beat sandbox timeouts
+	- Make sample look "hung"
+- At this `0x473d50` offset it it doing syscall to `nanosleep`, and the function is `sub_473D40`.
+- In [IDA Pro](https://www.aldeid.com/wiki/IDA-Pro "IDA-Pro"), we confirm 0x63 (35) is moved to EAX and syscall is then called. 
+- Still referring to the [syscall table](https://filippo.io/linux-syscall-table/), we confirm it corresponds to `nanosleep`.
+- https://man7.org/linux/man-pages/man2/nanosleep.2.html
+
+![Pasted image 20260201153733.png](images/Pasted_image_20260201153733.png)
+
+#### Patch 2: nanosleep patch
+
+- We can see that `nanosleep` is called 2 times in the function. 
+- Let's patch the code by replacing syscall with NOP's, as follows:
+	- So same as previously we grep the hex stream which is this,
+
+```
+B8 23 00 00 00 0F 05
+```
+
+![Pasted image 20260201153735.png](images/Pasted_image_20260201153735.png)
+
+- Using HxD we will patch that,
+
+![Pasted image 20260201155658.png](images/Pasted_image_20260201155658.png)
+
+- After that i checked the `diff` both and here is what i got,
+
+```bash
+< e7bc5d2c0cf4480348f5504196561297.patched2:     file format elf64-x86-64
+---
+> e7bc5d2c0cf4480348f5504196561297.patched2.bak:     file format elf64-x86-64
+122582,122588c122582,122583
+<   473d49:     90                      nop
+<   473d4a:     90                      nop
+<   473d4b:     90                      nop
+<   473d4c:     90                      nop
+<   473d4d:     90                      nop
+<   473d4e:     90                      nop
+<   473d4f:     90                      nop
+---
+>   473d49:     b8 23 00 00 00          mov    eax,0x23
+>   473d4e:     0f 05                   syscall
+122595,122601c122590,122591
+<   473d6a:     90                      nop
+<   473d6b:     90                      nop
+<   473d6c:     90                      nop
+<   473d6d:     90                      nop
+<   473d6e:     90                      nop
+<   473d6f:     90                      nop
+<   473d70:     90                      nop
+---
+>   473d6a:     b8 23 00 00 00          mov    eax,0x23
+>   473d6f:     0f 05                   syscall
+```
+
+- Now we know that this first argument but what about second argument,
+- So i dig little and found that some bytes are being encoded using base64.
+- I got into the habit of copying the base64 bytes and setting up breakpoints every once in a while to get back to a checkpoint after each crash. 
+- `sub_401164` function decodes the bytes from base64.
+
+![Pasted image 20260202001050.png](images/Pasted_image_20260202001050.png)
+
+![Pasted image 20260202001508.png](images/Pasted_image_20260202001508.png)
+
+- After some analysis i found that those bytes are shellcode,
+- This is the flow of shellcode function,
+
+```bash
+entry -> 
+sub_452079 -> 
+    sub_44D525 -> 
+        sub_44BE43 -> 
+            sub_44B942 (Decompile_problem) -> mw_base64_decode
+                                           -> mw_shellcode_sus
+
+```
+
+### Advance Dynamic Analysis
+
+- I used `edb` tool for dynamic debugging for elf,
+- So i go to that `0x44bb2b` location and i found that it is calling, as discussed previously,
+
+```asm
+00000000:0044bb2b ff d2    call rdx
+```
+
+- So we can dump it by doing follow in dump of `rdx` and we get the shellcode,
+- I carve the shellcode and remove some unnecessary bytes,
+
+![Pasted image 20260201234708.png](images/Pasted_image_20260201234708.png)
+
+- I step into the function and see where shellcode ends and it is ending on this last operation, so up till this i kept and remove remaining bytes,
+
+```asm
+0x00007ffd6741cc8c: 80 38 D7 cmp byte ptr [eax], 0xd7
+```
+## Stage 2 Shellcode Analysis
+
+### Initial Triage
+
+- File Type: shellcode.bin: data
+- Size: 607 bytes
+- SHA256: 85b70829d62ab78429754247036a540afdb3548608cef9bbde53bef1f6ccd8c5
+### Basic Static Analysis
+
+- I checked VT for this hash, but it gives no results,
+- So i upload it and check whether it gives something, but nothing
+
+![Pasted image 20260201233759.png](images/Pasted_image_20260201233759.png)
+
+![Pasted image 20260201233920.png](images/Pasted_image_20260201233920.png)
+### Advance Static Analysis
+
+- This is 2nd stage shellcode carved from 1st stage elf,
+
+```
+48 89 f8 e8 00 00 00 00 48 8b 1c 24 48 83 c3 0a eb 0a 48 31 d2 48 31 c0 b0 3c 0f 05 c0 08 f2 80 38 1b 74 02 ff e3 48 83 c0 01 80 30 40 80 30 f2 80 30 b3 80 38 30 74 02 ff e3 48 83 c0 01 80 30 71 80 38 1f 74 02 ff e3 48 83 c0 01 80 00 a3 c0 08 bc 80 38 b0 74 02 ff e3 48 83 c0 01 80 28 79 80 38 e8 74 02 ff e3 48 83 c0 01 c0 08 82 80 28 28 80 38 f6 74 02 ff e3 48 83 c0 01 80 28 b0 c0 08 4d 80 00 2c 80 38 1f 74 02 ff e3 48 83 c0 01 80 00 54 c0 00 99 80 30 b8 c0 08 2a 80 00 3f 80 38 af 74 02 ff e3 48 83 c0 01 c0 08 ba 80 38 5d 74 02 ff e3 48 83 c0 01 80 30 ed c0 08 6c 80 00 30 80 38 29 74 02 ff e3 48 83 c0 01 80 28 bf 80 38 b5 74 02 ff e3 48 83 c0 01 c0 00 bc 80 00 8c c0 00 7b 80 28 31 80 00 63 80 38 a5 74 02 ff e3 48 83 c0 01 c0 00 20 c0 00 16 80 30 ae c0 00 98 80 38 f3 74 02 ff e3 48 83 c0 01 c0 08 6e 80 00 d2 80 38 a6 74 02 ff e3 48 83 c0 01 80 00 34 80 38 62 74 02 ff e3 48 83 c0 01 80 00 cd 80 28 10 80 00 62 80 30 b2 80 38 32 74 02 ff e3 48 83 c0 01 80 30 b7 80 30 73 c0 08 07 80 38 eb 74 02 ff e3 48 83 c0 01 80 00 34 80 28 61 c0 08 36 80 00 5b 80 28 4c 80 38 0b 74 02 ff e3 48 83 c0 01 80 00 5a 80 38 9a 74 02 ff e3 48 83 c0 01 c0 08 a2 80 38 99 74 02 ff e3 48 83 c0 01 80 30 7e 80 28 e7 80 38 2b 74 02 ff e3 48 83 c0 01 80 28 b8 80 30 86 80 00 4e c0 08 4a c0 00 57 80 38 af 74 02 ff e3 48 83 c0 01 c0 08 86 80 30 e8 c0 00 95 80 30 4a 80 30 ad 80 38 c3 74 02 ff e3 48 83 c0 01 c0 08 45 80 30 cc 80 00 1c 80 38 03 74 02 ff e3 48 83 c0 01 80 28 4a 80 38 e3 74 02 ff e3 48 83 c0 01 80 30 a5 c0 08 90 80 38 ca 74 02 ff e3 48 83 c0 01 c0 08 de c0 00 36 80 30 78 80 28 d8 80 38 3e 74 02 ff e3 48 83 c0 01 80 00 b5 80 28 ad c0 08 89 c0 00 a2 c0 00 11 80 38 d8 74 02 ff e3 48 83 c0 01 80 00 40 80 28 21 c0 08 c0 80 38 82 74 02 ff e3 48 83 c0 01 c0 00 e3 80 38 7b 74 02 ff e3 48 83 c0 01 80 28 78 c0 08 f6 80 38 d7
+```
+
+- And this is actual disassembled assembly,
+
+```asm
+0x0000000000000000:  48                dec     eax
+0x0000000000000001:  89 F8             mov     eax, edi
+0x0000000000000003:  E8 00 00 00 00    call    8
+0x0000000000000008:  48                dec     eax
+0x0000000000000009:  8B 1C 24          mov     ebx, dword ptr [esp]
+0x000000000000000c:  48                dec     eax
+0x000000000000000d:  83 C3 0A          add     ebx, 0xa
+0x0000000000000010:  EB 0A             jmp     0x1c
+0x0000000000000012:  48                dec     eax
+0x0000000000000013:  31 D2             xor     edx, edx
+0x0000000000000015:  48                dec     eax
+0x0000000000000016:  31 C0             xor     eax, eax
+0x0000000000000018:  B0 3C             mov     al, 0x3c
+0x000000000000001a:  0F 05             syscall 
+0x000000000000001c:  C0 08 F2          ror     byte ptr [eax], 0xf2
+0x000000000000001f:  80 38 1B          cmp     byte ptr [eax], 0x1b
+0x0000000000000022:  74 02             je      0x26
+0x0000000000000024:  FF E3             jmp     ebx
+0x0000000000000026:  48                dec     eax
+0x0000000000000027:  83 C0 01          add     eax, 1
+0x000000000000002a:  80 30 40          xor     byte ptr [eax], 0x40
+0x000000000000002d:  80 30 F2          xor     byte ptr [eax], 0xf2
+0x0000000000000030:  80 30 B3          xor     byte ptr [eax], 0xb3
+0x0000000000000033:  80 38 30          cmp     byte ptr [eax], 0x30
+0x0000000000000036:  74 02             je      0x3a
+0x0000000000000038:  FF E3             jmp     ebx
+0x000000000000003a:  48                dec     eax
+0x000000000000003b:  83 C0 01          add     eax, 1
+0x000000000000003e:  80 30 71          xor     byte ptr [eax], 0x71
+0x0000000000000041:  80 38 1F          cmp     byte ptr [eax], 0x1f
+0x0000000000000044:  74 02             je      0x48
+0x0000000000000046:  FF E3             jmp     ebx
+0x0000000000000048:  48                dec     eax
+0x0000000000000049:  83 C0 01          add     eax, 1
+0x000000000000004c:  80 00 A3          add     byte ptr [eax], 0xa3
+0x000000000000004f:  C0 08 BC          ror     byte ptr [eax], 0xbc
+0x0000000000000052:  80 38 B0          cmp     byte ptr [eax], 0xb0
+0x0000000000000055:  74 02             je      0x59
+0x0000000000000057:  FF E3             jmp     ebx
+0x0000000000000059:  48                dec     eax
+0x000000000000005a:  83 C0 01          add     eax, 1
+0x000000000000005d:  80 28 79          sub     byte ptr [eax], 0x79
+0x0000000000000060:  80 38 E8          cmp     byte ptr [eax], 0xe8
+0x0000000000000063:  74 02             je      0x67
+0x0000000000000065:  FF E3             jmp     ebx
+0x0000000000000067:  48                dec     eax
+0x0000000000000068:  83 C0 01          add     eax, 1
+0x000000000000006b:  C0 08 82          ror     byte ptr [eax], 0x82
+0x000000000000006e:  80 28 28          sub     byte ptr [eax], 0x28
+0x0000000000000071:  80 38 F6          cmp     byte ptr [eax], 0xf6
+0x0000000000000074:  74 02             je      0x78
+0x0000000000000076:  FF E3             jmp     ebx
+0x0000000000000078:  48                dec     eax
+0x0000000000000079:  83 C0 01          add     eax, 1
+0x000000000000007c:  80 28 B0          sub     byte ptr [eax], 0xb0
+0x000000000000007f:  C0 08 4D          ror     byte ptr [eax], 0x4d
+0x0000000000000082:  80 00 2C          add     byte ptr [eax], 0x2c
+0x0000000000000085:  80 38 1F          cmp     byte ptr [eax], 0x1f
+0x0000000000000088:  74 02             je      0x8c
+0x000000000000008a:  FF E3             jmp     ebx
+0x000000000000008c:  48                dec     eax
+0x000000000000008d:  83 C0 01          add     eax, 1
+0x0000000000000090:  80 00 54          add     byte ptr [eax], 0x54
+0x0000000000000093:  C0 00 99          rol     byte ptr [eax], 0x99
+0x0000000000000096:  80 30 B8          xor     byte ptr [eax], 0xb8
+0x0000000000000099:  C0 08 2A          ror     byte ptr [eax], 0x2a
+0x000000000000009c:  80 00 3F          add     byte ptr [eax], 0x3f
+0x000000000000009f:  80 38 AF          cmp     byte ptr [eax], 0xaf
+0x00000000000000a2:  74 02             je      0xa6
+0x00000000000000a4:  FF E3             jmp     ebx
+0x00000000000000a6:  48                dec     eax
+0x00000000000000a7:  83 C0 01          add     eax, 1
+0x00000000000000aa:  C0 08 BA          ror     byte ptr [eax], 0xba
+0x00000000000000ad:  80 38 5D          cmp     byte ptr [eax], 0x5d
+0x00000000000000b0:  74 02             je      0xb4
+0x00000000000000b2:  FF E3             jmp     ebx
+0x00000000000000b4:  48                dec     eax
+0x00000000000000b5:  83 C0 01          add     eax, 1
+0x00000000000000b8:  80 30 ED          xor     byte ptr [eax], 0xed
+0x00000000000000bb:  C0 08 6C          ror     byte ptr [eax], 0x6c
+0x00000000000000be:  80 00 30          add     byte ptr [eax], 0x30
+0x00000000000000c1:  80 38 29          cmp     byte ptr [eax], 0x29
+0x00000000000000c4:  74 02             je      0xc8
+0x00000000000000c6:  FF E3             jmp     ebx
+0x00000000000000c8:  48                dec     eax
+0x00000000000000c9:  83 C0 01          add     eax, 1
+0x00000000000000cc:  80 28 BF          sub     byte ptr [eax], 0xbf
+0x00000000000000cf:  80 38 B5          cmp     byte ptr [eax], 0xb5
+0x00000000000000d2:  74 02             je      0xd6
+0x00000000000000d4:  FF E3             jmp     ebx
+0x00000000000000d6:  48                dec     eax
+0x00000000000000d7:  83 C0 01          add     eax, 1
+0x00000000000000da:  C0 00 BC          rol     byte ptr [eax], 0xbc
+0x00000000000000dd:  80 00 8C          add     byte ptr [eax], 0x8c
+0x00000000000000e0:  C0 00 7B          rol     byte ptr [eax], 0x7b
+0x00000000000000e3:  80 28 31          sub     byte ptr [eax], 0x31
+0x00000000000000e6:  80 00 63          add     byte ptr [eax], 0x63
+0x00000000000000e9:  80 38 A5          cmp     byte ptr [eax], 0xa5
+0x00000000000000ec:  74 02             je      0xf0
+0x00000000000000ee:  FF E3             jmp     ebx
+0x00000000000000f0:  48                dec     eax
+0x00000000000000f1:  83 C0 01          add     eax, 1
+0x00000000000000f4:  C0 00 20          rol     byte ptr [eax], 0x20
+0x00000000000000f7:  C0 00 16          rol     byte ptr [eax], 0x16
+0x00000000000000fa:  80 30 AE          xor     byte ptr [eax], 0xae
+0x00000000000000fd:  C0 00 98          rol     byte ptr [eax], 0x98
+0x0000000000000100:  80 38 F3          cmp     byte ptr [eax], 0xf3
+0x0000000000000103:  74 02             je      0x107
+0x0000000000000105:  FF E3             jmp     ebx
+0x0000000000000107:  48                dec     eax
+0x0000000000000108:  83 C0 01          add     eax, 1
+0x000000000000010b:  C0 08 6E          ror     byte ptr [eax], 0x6e
+0x000000000000010e:  80 00 D2          add     byte ptr [eax], 0xd2
+0x0000000000000111:  80 38 A6          cmp     byte ptr [eax], 0xa6
+0x0000000000000114:  74 02             je      0x118
+0x0000000000000116:  FF E3             jmp     ebx
+0x0000000000000118:  48                dec     eax
+0x0000000000000119:  83 C0 01          add     eax, 1
+0x000000000000011c:  80 00 34          add     byte ptr [eax], 0x34
+0x000000000000011f:  80 38 62          cmp     byte ptr [eax], 0x62
+0x0000000000000122:  74 02             je      0x126
+0x0000000000000124:  FF E3             jmp     ebx
+0x0000000000000126:  48                dec     eax
+0x0000000000000127:  83 C0 01          add     eax, 1
+0x000000000000012a:  80 00 CD          add     byte ptr [eax], 0xcd
+0x000000000000012d:  80 28 10          sub     byte ptr [eax], 0x10
+0x0000000000000130:  80 00 62          add     byte ptr [eax], 0x62
+0x0000000000000133:  80 30 B2          xor     byte ptr [eax], 0xb2
+0x0000000000000136:  80 38 32          cmp     byte ptr [eax], 0x32
+0x0000000000000139:  74 02             je      0x13d
+0x000000000000013b:  FF E3             jmp     ebx
+0x000000000000013d:  48                dec     eax
+0x000000000000013e:  83 C0 01          add     eax, 1
+0x0000000000000141:  80 30 B7          xor     byte ptr [eax], 0xb7
+0x0000000000000144:  80 30 73          xor     byte ptr [eax], 0x73
+0x0000000000000147:  C0 08 07          ror     byte ptr [eax], 7
+0x000000000000014a:  80 38 EB          cmp     byte ptr [eax], 0xeb
+0x000000000000014d:  74 02             je      0x151
+0x000000000000014f:  FF E3             jmp     ebx
+0x0000000000000151:  48                dec     eax
+0x0000000000000152:  83 C0 01          add     eax, 1
+0x0000000000000155:  80 00 34          add     byte ptr [eax], 0x34
+0x0000000000000158:  80 28 61          sub     byte ptr [eax], 0x61
+0x000000000000015b:  C0 08 36          ror     byte ptr [eax], 0x36
+0x000000000000015e:  80 00 5B          add     byte ptr [eax], 0x5b
+0x0000000000000161:  80 28 4C          sub     byte ptr [eax], 0x4c
+0x0000000000000164:  80 38 0B          cmp     byte ptr [eax], 0xb
+0x0000000000000167:  74 02             je      0x16b
+0x0000000000000169:  FF E3             jmp     ebx
+0x000000000000016b:  48                dec     eax
+0x000000000000016c:  83 C0 01          add     eax, 1
+0x000000000000016f:  80 00 5A          add     byte ptr [eax], 0x5a
+0x0000000000000172:  80 38 9A          cmp     byte ptr [eax], 0x9a
+0x0000000000000175:  74 02             je      0x179
+0x0000000000000177:  FF E3             jmp     ebx
+0x0000000000000179:  48                dec     eax
+0x000000000000017a:  83 C0 01          add     eax, 1
+0x000000000000017d:  C0 08 A2          ror     byte ptr [eax], 0xa2
+0x0000000000000180:  80 38 99          cmp     byte ptr [eax], 0x99
+0x0000000000000183:  74 02             je      0x187
+0x0000000000000185:  FF E3             jmp     ebx
+0x0000000000000187:  48                dec     eax
+0x0000000000000188:  83 C0 01          add     eax, 1
+0x000000000000018b:  80 30 7E          xor     byte ptr [eax], 0x7e
+0x000000000000018e:  80 28 E7          sub     byte ptr [eax], 0xe7
+0x0000000000000191:  80 38 2B          cmp     byte ptr [eax], 0x2b
+0x0000000000000194:  74 02             je      0x198
+0x0000000000000196:  FF E3             jmp     ebx
+0x0000000000000198:  48                dec     eax
+0x0000000000000199:  83 C0 01          add     eax, 1
+0x000000000000019c:  80 28 B8          sub     byte ptr [eax], 0xb8
+0x000000000000019f:  80 30 86          xor     byte ptr [eax], 0x86
+0x00000000000001a2:  80 00 4E          add     byte ptr [eax], 0x4e
+0x00000000000001a5:  C0 08 4A          ror     byte ptr [eax], 0x4a
+0x00000000000001a8:  C0 00 57          rol     byte ptr [eax], 0x57
+0x00000000000001ab:  80 38 AF          cmp     byte ptr [eax], 0xaf
+0x00000000000001ae:  74 02             je      0x1b2
+0x00000000000001b0:  FF E3             jmp     ebx
+0x00000000000001b2:  48                dec     eax
+0x00000000000001b3:  83 C0 01          add     eax, 1
+0x00000000000001b6:  C0 08 86          ror     byte ptr [eax], 0x86
+0x00000000000001b9:  80 30 E8          xor     byte ptr [eax], 0xe8
+0x00000000000001bc:  C0 00 95          rol     byte ptr [eax], 0x95
+0x00000000000001bf:  80 30 4A          xor     byte ptr [eax], 0x4a
+0x00000000000001c2:  80 30 AD          xor     byte ptr [eax], 0xad
+0x00000000000001c5:  80 38 C3          cmp     byte ptr [eax], 0xc3
+0x00000000000001c8:  74 02             je      0x1cc
+0x00000000000001ca:  FF E3             jmp     ebx
+0x00000000000001cc:  48                dec     eax
+0x00000000000001cd:  83 C0 01          add     eax, 1
+0x00000000000001d0:  C0 08 45          ror     byte ptr [eax], 0x45
+0x00000000000001d3:  80 30 CC          xor     byte ptr [eax], 0xcc
+0x00000000000001d6:  80 00 1C          add     byte ptr [eax], 0x1c
+0x00000000000001d9:  80 38 03          cmp     byte ptr [eax], 3
+0x00000000000001dc:  74 02             je      0x1e0
+0x00000000000001de:  FF E3             jmp     ebx
+0x00000000000001e0:  48                dec     eax
+0x00000000000001e1:  83 C0 01          add     eax, 1
+0x00000000000001e4:  80 28 4A          sub     byte ptr [eax], 0x4a
+0x00000000000001e7:  80 38 E3          cmp     byte ptr [eax], 0xe3
+0x00000000000001ea:  74 02             je      0x1ee
+0x00000000000001ec:  FF E3             jmp     ebx
+0x00000000000001ee:  48                dec     eax
+0x00000000000001ef:  83 C0 01          add     eax, 1
+0x00000000000001f2:  80 30 A5          xor     byte ptr [eax], 0xa5
+0x00000000000001f5:  C0 08 90          ror     byte ptr [eax], 0x90
+0x00000000000001f8:  80 38 CA          cmp     byte ptr [eax], 0xca
+0x00000000000001fb:  74 02             je      0x1ff
+0x00000000000001fd:  FF E3             jmp     ebx
+0x00000000000001ff:  48                dec     eax
+0x0000000000000200:  83 C0 01          add     eax, 1
+0x0000000000000203:  C0 08 DE          ror     byte ptr [eax], 0xde
+0x0000000000000206:  C0 00 36          rol     byte ptr [eax], 0x36
+0x0000000000000209:  80 30 78          xor     byte ptr [eax], 0x78
+0x000000000000020c:  80 28 D8          sub     byte ptr [eax], 0xd8
+0x000000000000020f:  80 38 3E          cmp     byte ptr [eax], 0x3e
+0x0000000000000212:  74 02             je      0x216
+0x0000000000000214:  FF E3             jmp     ebx
+0x0000000000000216:  48                dec     eax
+0x0000000000000217:  83 C0 01          add     eax, 1
+0x000000000000021a:  80 00 B5          add     byte ptr [eax], 0xb5
+0x000000000000021d:  80 28 AD          sub     byte ptr [eax], 0xad
+0x0000000000000220:  C0 08 89          ror     byte ptr [eax], 0x89
+0x0000000000000223:  C0 00 A2          rol     byte ptr [eax], 0xa2
+0x0000000000000226:  C0 00 11          rol     byte ptr [eax], 0x11
+0x0000000000000229:  80 38 D8          cmp     byte ptr [eax], 0xd8
+0x000000000000022c:  74 02             je      0x230
+0x000000000000022e:  FF E3             jmp     ebx
+0x0000000000000230:  48                dec     eax
+0x0000000000000231:  83 C0 01          add     eax, 1
+0x0000000000000234:  80 00 40          add     byte ptr [eax], 0x40
+0x0000000000000237:  80 28 21          sub     byte ptr [eax], 0x21
+0x000000000000023a:  C0 08 C0          ror     byte ptr [eax], 0xc0
+0x000000000000023d:  80 38 82          cmp     byte ptr [eax], 0x82
+0x0000000000000240:  74 02             je      0x244
+0x0000000000000242:  FF E3             jmp     ebx
+0x0000000000000244:  48                dec     eax
+0x0000000000000245:  83 C0 01          add     eax, 1
+0x0000000000000248:  C0 00 E3          rol     byte ptr [eax], 0xe3
+0x000000000000024b:  80 38 7B          cmp     byte ptr [eax], 0x7b
+0x000000000000024e:  74 02             je      0x252
+0x0000000000000250:  FF E3             jmp     ebx
+0x0000000000000252:  48                dec     eax
+0x0000000000000253:  83 C0 01          add     eax, 1
+0x0000000000000256:  80 28 78          sub     byte ptr [eax], 0x78
+0x0000000000000259:  C0 08 F6          ror     byte ptr [eax], 0xf6
+0x000000000000025c:  80 38 D7          cmp     byte ptr [eax], 0xd7
+```
+
+- As you can see, for each letter, there are transformations (ror, rol, xor, add, sub) applied to the letter provided. The result is then compared to an expected result. If it succeeds (expected result), the program continues and if it fails, it exits.
+-  Since we have the result of the transformations for each letter, it is possible to reverse the logic to get the initial letter. Let's take an example (letter 4). The code is as follows:
+
+```asm
+add byte ptr [rax], 0xa3
+ror byte ptr [rax], 0xbc
+cmp byte ptr [rax], 0xb0
+```
+
+![Pasted image 20260201231842.png](images/Pasted_image_20260201231842.png)
+
+- As you can see it is character by character check so we have to make script to automate it,
+
+![Pasted image 20260201233334.png](images/Pasted_image_20260201233334.png)
+
+- This script **reverses a byte-by-byte verification routine or decryption** in the binary to recover the **correct second command-line argument**.
+- In short, you have to enter 2nd flag as arg2 and it will perform certain operation with each character and compare it and if succeed then proceed.
+- So we can build flag from this operation by reverse decoding it.
+- Script Taken from: https://www.aldeid.com/wiki/The-FLARE-On-Challenge-01/Challenge-6
+
+```py
+#!/usr/bin/env python
+
+# source for rol and ror: http://www.falatic.com/index.php/108/python-and-bitwise-rotation
+# Rotate left. Set max_bits to 8.
+rol = lambda val, r_bits, max_bits=8: \
+    (val << r_bits%max_bits) & (2**max_bits-1) | \
+    ((val & (2**max_bits-1)) >> (max_bits-(r_bits%max_bits)))
+ 
+# Rotate right. Set max_bits to 8.
+ror = lambda val, r_bits, max_bits=8: \
+    ((val & (2**max_bits-1)) >> r_bits%max_bits) | \
+    (val << (max_bits-(r_bits%max_bits)) & (2**max_bits-1))
+
+l = []
+
+### Letter 1
+"""
+ror byte ptr [rax], 0xf2
+cmp byte ptr [rax], 27
+"""
+l.append( rol(27, 0xf2) )
+
+### Letter 2
+"""
+xor byte ptr [rax], 64
+xor byte ptr [rax], 0xf2
+xor byte ptr [rax], 0xb3
+cmp byte ptr [rax], 48
+"""
+l.append( 48 ^ 0xb3 ^ 0xf2 ^ 64 )
+
+### Letter 3
+"""
+xor byte ptr [rax], 113
+cmp byte ptr [rax], 31
+"""
+l.append( 31 ^ 113 )
+
+### letter 4
+"""
+add byte ptr [rax], 0xa3
+ror byte ptr [rax], 0xbc
+cmp byte ptr [rax], 0xb0
+"""
+l.append( rol(0xb0, 0xbc) - 0xa3 )
+
+### letter 5
+"""
+sub byte ptr [rax], 121
+cmp byte ptr [rax], 0xe8
+"""
+l.append( 0xe8 + 121 )
+
+### letter 6
+"""
+ror byte ptr [rax], 0x82
+sub byte ptr [rax], 40
+cmp byte ptr [rax], 0xf6
+"""
+l.append( rol(0xf6 + 40, 0x82) )
+
+### letter 7
+"""
+sub byte ptr [rax], 0xb0
+ror byte ptr [rax], 77
+add byte ptr [rax], 44
+cmp byte ptr [rax], 31
+"""
+l.append( rol(31 - 44, 77) + 0xb0 )
+
+### letter 8
+"""
+add byte ptr [rax], 84
+rol byte ptr [rax], 0x99
+xor byte ptr [rax], 0xb8
+ror byte ptr [rax], 42
+add byte ptr [rax], 63
+cmp byte ptr [rax], 0xaf
+"""
+l.append( ror(rol(0xaf - 63, 42) ^ 0xb8, 0x99) - 84 )
+
+### letter 9
+"""
+ror byte ptr [rax], 0xba
+cmp byte ptr [rax], 93
+"""
+l.append( rol(93, 0xba) )
+
+### letter 10
+"""
+xor byte ptr [rax], 0xed
+ror byte ptr [rax], 108
+add byte ptr [rax], 48
+cmp byte ptr [rax], 41
+"""
+l.append( rol(41 - 48, 108) ^ 0xed )
+
+### letter 11
+"""
+sub byte ptr [rax], 0xbf
+cmp byte ptr [rax], 0xb5
+"""
+l.append( 0xb5 + 0xbf )
+
+### letter 12
+"""
+rol byte ptr [rax], 0xbc
+add byte ptr [rax], 0x8c
+rol byte ptr [rax], 123
+sub byte ptr [rax], 49
+add byte ptr [rax], 99
+cmp byte prt [rax], 0xa5
+"""
+l.append( ror(ror(0xa5 - 99 + 49, 123) - 0x8c, 0xbc) )
+
+### letter 13
+"""
+rol byte ptr [rax], 32
+rol byte ptr [rax], 22
+xor byte ptr [rax], 0xae
+rol byte ptr [rax], 0x98
+cmp byte ptr [rax], 0xf3
+"""
+l.append( ror(ror(ror(0xf3, 0x98) ^ 0xae, 22), 32) )
+
+### letter 14
+"""
+ror byte ptr [rax], 110
+add byte ptr [rax], 0xd2
+cmp byte ptr [rax], 0xa6
+"""
+l.append( rol(0xa6 - 0xd2, 110) )
+
+### letter 15
+"""
+add byte ptr [rax], 52
+cmp byte ptr [rax], 98
+"""
+l.append( 98 - 52 )
+
+### letter 16
+"""
+add byte ptr [rax], 0xcd
+sub byte ptr [rax], 16
+add byte ptr [rax], 98
+xor byte ptr [rax], 0xb2
+cmp byte ptr [rax], 50
+"""
+l.append( (50 ^ 0xb2) - 98 + 16 - 0xcd )
+
+### letter 17
+"""
+xor byte ptr [rax], 0xb7
+xor byte ptr [rax], 115
+ror byte ptr [rax], 7
+cmp byte ptr [rax], 0xeb
+"""
+l.append( rol(0xeb, 7) ^ 115 ^ 0xb7 )
+
+### letter 18
+"""
+add byte ptr [rax], 52
+sub byte ptr [rax], 97
+ror byte ptr [rax], 54
+add byte ptr [rax], 91
+sub byte ptr [rax], 76
+cmp byte ptr [rax], 11
+"""
+l.append( rol(11 + 76 - 91, 54) + 97 - 52 )
+
+### letter 19
+"""
+add byte ptr [rax], 90
+cmp byte ptr [rax], 0x9a
+"""
+l.append( 0x9a - 90 )
+
+### letter 20
+"""
+ror byte ptr [rax], 0xa2
+cmp byte ptr [rax], 0x99
+"""
+l.append( rol(0x99, 0xa2) )
+
+### letter 21
+"""
+xor byte ptr [rax], 126
+sub byte ptr [rax], 0xe7
+cmp byte ptr [rax], 43
+"""
+l.append( (43 + 0xe7) ^ 126 )
+
+### letter 22
+"""
+sub byte ptr [rax], 0xb8
+xor byte ptr [rax], 0x86
+add byte ptr [rax], 78
+ror byte ptr [rax], 74
+rol byte ptr [rax], 87
+cmp byte ptr [rax], 0xaf
+"""
+l.append( ((rol(ror(0xaf, 87), 74) - 78) ^ 0x86) + 0xb8 )
+
+### letter 23
+"""
+ror byte ptr [rax], 0x86
+xor byte ptr [rax], 0xe8
+rol byte ptr [rax], 0x95
+xor byte ptr [rax], 74
+xor byte ptr [rax], 0xad
+cmp byte ptr [rax], 0xc3
+"""
+l.append( rol(ror(0xc3 ^ 0xad ^ 74, 0x95) ^ 0xe8, 0x86) )
+
+### letter 24
+"""
+ror byte ptr [rax], 69
+xor byte ptr [rax], 0xcc
+add byte ptr [rax], 28
+cmp byte ptr [rax], 3
+"""
+l.append( rol((3 - 28) ^ 0xcc, 69) )
+
+### letter 25
+"""
+sub byte ptr [rax], 74
+cmp byte ptr [rax], 0xe3
+"""
+l.append( 0xe3 + 74 )
+
+### letter 26
+"""
+xor byte ptr [rax], 0xa5
+ror byte ptr [rax], 0x90
+cmp byte ptr [rax], 0xca
+"""
+l.append( rol(0xca, 0x90) ^ 0xa5 )
+
+### letter 27
+"""
+ror byte ptr [rax], 0xde
+rol byte ptr [rax], 54
+xor byte ptr [rax], 120
+sub byte ptr [rax], 0xd8
+cmp byte ptr [rax], 62
+"""
+l.append( rol(ror((62 + 0xd8) ^ 120, 54), 0xde) )
+
+### letter 28
+"""
+add byte ptr [rax], 0xb5
+sub byte ptr [rax], 0xad
+ror byte ptr [rax], 0x89
+rol byte ptr [rax], 0xa2
+rol byte ptr [rax], 17
+cmp byte ptr [rax], 0xd8
+"""
+l.append( rol(ror(ror(0xd8, 17), 0xa2), 0x89) + 0xad - 0xb5 )
+
+### letter 29
+"""
+add byte ptr [rax], 64
+sub byte ptr [rax], 33
+ror byte ptr [rax], 0xc0
+cmp byte ptr [rax], 0x82
+"""
+l.append( rol(0x82, 0xc0) + 33 - 64 )
+
+### letter 30
+"""
+rol byte ptr [rax], 0xe3
+cmp byte ptr [rax], 123
+"""
+l.append( ror(123, 0xe3) )
+
+### letter 31
+"""
+sub byte ptr [rax], 120
+ror byte ptr [rax], 0xf6
+cmp byte ptr [rax], 0xd7
+"""
+l.append( rol(0xd7, 0xf6) + 120 )
+
+# modulo 256 applied to ensure values are in range(256)
+print ''.join([chr(i % 256) for i in l])
+```
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ python2 solve.py
+l1nhax.hurt.u5.a1l@flare-on.com
+```
+
+- After giving flag as arg2 it is trying to connect with the some host, maybe try to mimic like a C2 server,
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ strace -i ./e7bc5d2c0cf4480348f5504196561297.patched2 4815162342 l1nhax.hurt.u5.a1l@flare-on.com
+
+[00007e36940de557] execve("./e7bc5d2c0cf4480348f5504196561297.patched2", ["./e7bc5d2c0cf4480348f55041965612"..., "4815162342", "l1nhax.hurt.u5.a1l@flare-on.com"], 0x7fffd1dd75e8 /* 35 vars */) = 0
+[00000000004a9297] uname({sysname="Linux", nodename="DESKTOP-VRSQRAJ", ...}) = 0
+[00000000004aa78a] brk(NULL)            = 0x4913000
+[00000000004aa78a] brk(0x49141c0)       = 0x49141c0
+[000000000045e3f5] arch_prctl(ARCH_SET_FS, 0x4913880) = 0
+[00000000004aa78a] brk(0x49351c0)       = 0x49351c0
+[00000000004aa78a] brk(0x4936000)       = 0x4936000
+[000000000047431b] ptrace(PTRACE_TRACEME) = -1 EPERM (Operation not permitted)
+[000000000047c9c0] rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+[000000000047c882] rt_sigaction(SIGCHLD, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+[000000000047c882] rt_sigaction(SIGCHLD, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+[000000000047c882] rt_sigaction(SIGCHLD, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+[000000000047c882] rt_sigaction(SIGCHLD, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+[000000000047c882] rt_sigaction(SIGCHLD, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+[000000000047c9c0] rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+[00007fff1a8fc114] socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
+[00007fff1a8fc140] connect(3, {sa_family=AF_INET, sin_port=htons(39426), sin_addr=inet_addr("9.30.75.86")}, 16
+```
+
+- Here is our flag,
+
+```yml
+l1nhax.hurt.u5.a1l@flare-on.com
+```
+
+- Here is the flow of this program. (There might be some inaccuracy or mistake so sorry for that in advance because i am a leaner like you. 😅)
+
+![Pasted image 20260202005044.png](images/Pasted_image_20260202005044.png)
