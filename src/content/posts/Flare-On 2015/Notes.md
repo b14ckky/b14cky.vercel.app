@@ -238,15 +238,3 @@ for i in range(0x00402140, 0x00402158):
 ```
 
 ![Pasted image 20260325054501.png](images/Pasted_image_20260325054501.png)
-
-# Challenge 2:
-# Challenge 3:
-# Challenge 4:
-# Challenge 5:
-# Challenge 6:
-# Challenge 7:
-# Challenge 8:
-# Challenge 9:
-# Challenge 10:
-# Challenge 11:
-
