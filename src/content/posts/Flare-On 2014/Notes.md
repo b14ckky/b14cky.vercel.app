@@ -12,7 +12,7 @@ draft: false
 
 - **Category: Malware Analysis and Reverse Engineering**
 - **Difficulty: Easy/Medium/Hard**
-- File:- [2014_FLAREOn_Challenges.zip](/uploads/Flare-On_2014/2014_FLAREOn_Challenges.zip)
+- File:- [2014_FLAREOn_Challenges.zip](/uploads/Flare-On/2014_FLAREOn_Challenges.zip)
 
 # Challenge 1 - Bob Doge
 

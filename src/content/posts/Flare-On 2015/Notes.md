@@ -12,7 +12,7 @@ draft: false
 
 - **Category: Malware Analysis and Reverse Engineering**
 - **Difficulty: Easy/Medium/Hard**
-- File: 2014_FLAREOn_Challenges.zip
+- File: [2015_FLAREOn_Challenges.zip](/uploads/Flare-On/2015_FLAREOn_Challenges.zip)
 
 # Challenge 1:
 
@@ -227,6 +227,7 @@ print("success");
 ```yml
 bunny_sl0pe@flare-on.com
 ```
+
 - You can also apply this `IDApython` script which will manually patch the bytes, (only for IDA pro).
 
 ```python
@@ -238,3 +239,175 @@ for i in range(0x00402140, 0x00402158):
 ```
 
 ![Pasted image 20260325054501.png](images/Pasted_image_20260325054501.png)
+
+# Challenge 2:
+## Stage 1 Understanding the ASMx86 Compiled exe
+
+### Initial Triage
+
+
+- File Type: PE32 executable for MS Windows 4.00 (console)
+- Size: 2KB
+- SHA256: 9852afb172bc03a50d291c70faa724c69a10af9e6ee88457185ce5e0705216f0
+
+### Basic Static Analysis
+
+- By running `die` on it, and it is written in **assembly**.
+- Also, it has missing DOS Header which means most of the automatic tools fail ![Pasted image 20260327194901.png](images/Pasted_image_20260327194901.png)
+
+- I ran `floss` for strings analysis and here is what i get,
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ /opt/floss very_success
+.
+.
+.
+ ───────────────────────────
+  FLOSS STATIC STRINGS (20)
+ ───────────────────────────
++----------------------------------+
+| FLOSS STATIC STRINGS: ASCII (20) |
++----------------------------------+
+
+.text
+.data
+PjCh
+Pj2hY!@
+hY!@
+h5!@
+hG!@
+kernel32.dll
+LoadLibraryA
+GetProcAddress
+GetLastError
+GetStdHandle
+AttachConsole
+WriteConsoleA
+WriteFile
+ReadFile
+You crushed that last one! Let's up the game.
+Enter the password>
+You are success
+You are failure
++------------------------------------+
+| FLOSS STATIC STRINGS: UTF-16LE (0) |
++------------------------------------+
+ ─────────────────────────
+  FLOSS STACK STRINGS (0)
+ ─────────────────────────
+ ─────────────────────────
+  FLOSS TIGHT STRINGS (0)
+ ─────────────────────────
+ ───────────────────────────
+  FLOSS DECODED STRINGS (0)
+ ───────────────────────────
+```
+
+- It gives some `kernel32.dll` API functions,
+- Hypothesis: (console-based loader/tool using dynamic API resolution + file I/O operations).
+
+```bash
+LoadLibraryA
+GetProcAddress
+GetLastError
+GetStdHandle
+AttachConsole
+WriteConsoleA
+WriteFile
+ReadFile
+```
+
+- Some string related to password things,
+
+```
+You crushed that last one! Let's up the game.
+Enter the password>
+You are success
+You are failure
+```
+### Advance Static Analysis
+
+- I opened it in IDA, and it has only `2 functions` and `start function`,
+	- `sub_401000`
+	- `sub_401084`
+
+![Pasted image 20260327235700.png](images/Pasted_image_20260327235700.png)
+
+- Func1: `sub_401000`
+
+![Pasted image 20260327235824.png](images/Pasted_image_20260327235824.png)
+
+- Func2: `sub_401084`
+
+![Pasted image 20260328000037.png](images/Pasted_image_20260328000037.png)
+
+- This is flow of the whole program,
+
+![Pasted image 20260327235926.png](images/Pasted_image_20260327235926.png)
+- Gets stdin/stdout handles via `GetStdHandle`.
+- Prints a prompt to stdout.
+- Reads up to 50 bytes from stdin into buffer `unk_402159`.
+- Passes that buffer to the validator function.
+- Prints success or failure message based on return value.
+
+![Pasted image 20260328000108.png](images/Pasted_image_20260328000108.png)
+
+- Buffer `unk_402159` holds both your input AND the expected hash bytes
+- Bytes 0–36 → your typed input
+- Bytes 36+ → hardcoded expected values baked into `.data`
+- So the correct key is exactly **37 chars long**.
+#### Validator Logic (sub_401084)
+
+- Arguments,
+	- `a2` → pointer to expected checksum array (read from `a2+36` backwards)
+	- `a3` → your input string
+	- `a4` → input length
+- **Step 1 — Length check:** input < 37 → return 0 (fail) immediately
+- **Step 2 — 37-round rolling hash:**
+	- XOR each char with `0xC7` (low byte of 455)
+	- Rotate `1` left by `(v4 & 3)` bits, add x86 carry flag + XOR result
+	- Accumulate result into `v4` → affects next round's rotation
+- **Step 3 — Compare:** computed byte must match `expected[i]`, mismatch sets `v5=0` and breaks early
+- **Returns** non-zero if all 37 match, `0` otherwise
+
+#### Flag Calculation using angr framework 
+
+- Now this is where it gets interesting. **We know the binary takes input, runs it through a 37-round rolling hash, and compares the result against hardcoded expected bytes**. "Reversing that hash manually is painful because each round depends on the previous one (stateful accumulator + x86 carry flag)". 
+- So instead of reversing it by hand, we let a tool do the heavy lifting.
+- We use `angr`, a binary analysis framework that converts execution into a math problem using **symbolic execution**. 
+- Instead of running the binary with a real input, angr runs it with symbolic unknowns (think algebra variables), tracks every constraint the binary puts on those unknowns, and hands the whole thing to a solver (Z3) which figures out the exact values that satisfy all constraints.
+- In short, angr runs the binary with unknown input, explores all possible execution paths simultaneously, and finds the one input that reaches the success branch.
+- More on [angr](https://angr.io/)...
+
+```bash
+pip install angr claripy
+```
+
+```python
+import angr
+import claripy
+
+proj = angr.Project('very_success.exe', auto_load_libs=False)
+
+flag = [claripy.BVS(f'c{i}', 8) for i in range(37)]
+state = proj.factory.full_init_state(stdin=claripy.Concat(*flag, claripy.BVV(b'\n')))
+
+for c in flag:
+    state.solver.add(c >= 0x20, c <= 0x7e)
+
+simgr = proj.factory.simulation_manager(state)
+simgr.use_technique(angr.exploration_techniques.Veritesting())
+simgr.explore(find=0x0040106B, avoid=0x00401072)
+
+if simgr.found:
+    s = simgr.found[0]
+    print(b''.join(s.solver.eval(c, cast_to=bytes) for c in flag))
+```
+![Pasted image 20260328002438.png](images/Pasted_image_20260328002438.png)
+
+- Here is the flag,
+
+```yml
+a_Little_b1t_harder_plez@flare-on.com
+```
