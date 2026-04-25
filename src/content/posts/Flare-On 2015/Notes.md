@@ -411,3 +411,150 @@ if simgr.found:
 ```yml
 a_Little_b1t_harder_plez@flare-on.com
 ```
+
+# Challenge 3:
+
+## Stage 1 - Analyzing the PyInstaller Compiled EXE
+
+### Initial Triage
+
+- File Type: PE32 executable for MS Windows 5.00 (console), Intel i386
+- Size: 11.6MB
+- SHA256: 6b82463eaa13aba88aab9050f08bcc7658067f4dc4d6ca04f49bbda2201cc70b
+### Basic Static Analysis
+
+Running the sample through **Detect It Easy (DIE)** immediately tells us something interesting:
+
+- 32-bit Windows executable (~11.6 MB)
+- Built with Visual C++ 2008 — but wait, it's actually a **Python program packed with PyInstaller**
+- DIE flags it as **packed/compressed**
+- There's a **large overlay** at the end of the file containing **zlib-compressed data**
+
+![Pasted image 20260329143144.png](images/Pasted_image_20260329143144.png)
+
+Yep, it's packed alright.
+
+![Pasted image 20260329143427.png](images/Pasted_image_20260329143427.png)
+
+This is classic **PyInstaller** behaviour. When you bundle a Python script with PyInstaller, it doesn't compile it like C/C++ — instead it does something sneakier:
+
+1. **Bundles everything together** — your Python script, the Python interpreter, and all required libraries
+2. **Packs it into one EXE** — the front part is a small C loader, and the actual Python code + libs are stuffed at the end
+3. **Stores everything in an overlay** — this data is appended after the PE structure, often **zlib-compressed**, which is exactly why DIE throws up the "strange overlay" warning
+4. **At runtime**, the loader quietly extracts the embedded data and runs the Python code from memory or a temp folder
+
+So the strategy here is straightforward - we need to unpack it and get to the actual Python code. We can extract the `.pyc` (compiled bytecode) files using **pyinstxtractor**:
+
+```
+https://sourceforge.net/projects/pyinstallerextractor/
+```
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~]
+└─$ python pyinstxtractor.py elfie
+
+[*] Processing elfie
+[*] Pyinstaller version: 2.1+
+[*] Python version: 27
+[*] Length of package: 12034944 bytes
+[*] Found 26 files in CArchive
+[*] Beginning extraction...please standby
+[!] Warning: The script is running in a different python version than the one used to build the executable
+    Run this script in Python27 to prevent extraction errors(if any) during unmarshalling
+[*] Found 244 files in PYZ archive
+[+] Possible entry point: _pyi_bootstrap
+[+] Possible entry point: pyi_carchive
+[+] Possible entry point: elfie
+[*] Successfully extracted pyinstaller archive: elfie
+
+You can now use a python decompiler on the pyc files within the extracted directory
+```
+
+```bash
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/]
+└─$ ls
+elfie  elfie_extracted  pyinstxtractor.py
+
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/elfie_extracted]
+└─$ ls
+bz2.pyd                      msvcp90.dll              pyi_carchive          python27.dll            _ssl.pyd
+elfie                        msvcr90.dll              pyi_importers         QtCore4.dll             struct
+elfie.exe.manifest           out00-PYZ.pyz            pyi_os_path           QtGui4.dll              unicodedata.pyd
+_hashlib.pyd                 out00-PYZ.pyz_extracted  pyside-python2.7.dll  select.pyd
+Microsoft.VC90.CRT.manifest  pyi_archive              PySide.QtCore.pyd     shiboken-python2.7.dll
+msvcm90.dll                  _pyi_bootstrap           PySide.QtGui.pyd      _socket.pyd
+
+┌──(b14cky㉿DESKTOP-VRSQRAJ)-[~/elfie_extracted]
+└─$ file elfie
+elfie: ASCII text
+```
+
+The `elfie` file sitting in the extraction directory is our next target — it's a large blob of obfuscated Python code. Time to dig deeper.
+
+## Stage 2 - Analyzing of Python Blob
+
+### Initial Triage
+
+- File Type:  Python script, ASCII text executable, with very long lines (65463)
+- Size: 1348KB
+- SHA256: 922cc911074008ad494967b41fa48db712293e2572af53e8a5e823ff64c39761
+### Basic Static Analysis
+
+![Pasted image 20260329145418.png](images/Pasted_image_20260329145418.png)
+
+- Opening it up, we're greeted with this beautiful disaster:
+
+```python
+O0OO0OO00000OOOO0OOOOO0O00O0O0O0 = 'IRGppV0FJM3BRRlNwWGhNNG'
+OO0O0O00OO00OOOOOO0O0O0OOO0OOO0O = 'UczRkNZZ0JVRHJjbnRJUWlJV3FRTkpo'
+OOO0000O0OO0OOOOO000O00O0OO0O00O = 'xTStNRDJqZG9nRCtSU1V'
+OOO0000O0OO0OOOOO000O00O0OO0O00O += 'Rbk51WXI4dmRaOXlwV3NvME0ySGp'
+...
+O00OO00OOO0OOOO0OOOO0OO00000OOO0 += 'RabTBrZE'
+O00OO00OOO0OOOO0OOOO0OO00000OOO0 += 'VXWFY3QUtiTXFXQVYrenh4amxJZXI1MXd1YWJiWkRaWDRQV0'
+O00OO00OOO0OOOO0OOOO0OO00000OOO0 += 'xDUmhGcnRDcnd4VkF5'
+O00OO00OOO0OOOO0OOOO0OO00000OOO0 += 'aTBTMXd3OC8yY0ZqdzBIU0JMT0tEcktGckJUTkpvRGw2d'
+O00OO00OOO0OOOO0OOOO0OO00000OOO0 += 'nNocTB'
+import base64
+exec(base64.b64decode(OOO0OOOOOOOO0000O000O00O0OOOO00O +
+...
+OOO0000O0OO0OOOOO000O00O0OO0O00O + OOO0O00O00OOOOOOO00OOOO0000O0O00 + O0O00OO00O0O00O0O00O0OOO00O0O0OO + O00OOOOO000O00O0O00000OOO0000OOO + O0O0OOO000O000OO0O0O0OOOOO0OO000))
+```
+
+- Classic obfuscation, variable names that are just random sequences of `0` and `O` to make it visually impossible to read. 
+- The trick here is simple though: instead of letting `exec()` run the decoded payload blindly, we just swap it out for `print()` and let it tell us what it was about to execute.
+
+![Pasted image 20260329151056.png](images/Pasted_image_20260329151056.png)
+
+- Still pretty messy. After cleaning it up a bit, renaming some variables and fixing the formatting, it starts to look more sensible:
+
+![Pasted image 20260329151217.png](images/Pasted_image_20260329151217.png)
+
+- There are **two large base64 blobs** in there. 
+- I decode both of them, and notice they're also **reversed**, so I reverse them before decoding. Let's see what's inside.
+
+**Blob 1:**
+
+![Pasted image 20260329151404.png](images/Pasted_image_20260329151404.png)
+
+![Pasted image 20260329151413.png](images/Pasted_image_20260329151413.png)
+
+A glorious meme. 😂 Classic CTF energy.
+
+**Blob 2:**
+
+![Pasted image 20260329151459.png](images/Pasted_image_20260329151459.png)
+
+![Pasted image 20260329151506.png](images/Pasted_image_20260329151506.png)
+
+Another image. 😗
+
+- And then, hiding right there in plain sight the flag, in plaintext, reversed:
+
+![Pasted image 20260329150814.png](images/Pasted_image_20260329150814.png)
+
+Flip it around and we're done:
+
+```yml
+Elfie.L0000ves.YOOOO@flare-on.com
+```
